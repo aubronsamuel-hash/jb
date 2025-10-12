@@ -1,0 +1,4 @@
+mode: bootstrap
+validation_humaine: true
+ascii_only: true
+min_coverage: 0
