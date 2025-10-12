@@ -2,7 +2,7 @@
 
 Objectif: permettre a Codex d ingerer un prompt utilisateur et de produire un step, du code stub, des tests stubs, des workflows CI et une PR verte.
 
-Critères d acceptation (minimaux):
+Criteres d acceptation (minimaux):
 
 * Une PR s ouvre avec Ref vers docs/roadmap/step-01.md
 * Les workflows CI s executent et ne plantent pas.

@@ -1,4 +1,7 @@
 .codex/archives/
-.codex/sessions/
+.codex/sessions/*
+!.codex/sessions/.gitkeep
+!.codex/sessions/step-01/
+!.codex/sessions/step-01/**
 node_modules/
 **pycache**/

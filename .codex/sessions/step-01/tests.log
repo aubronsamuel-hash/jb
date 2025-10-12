@@ -1,0 +1,16 @@
+# Tests Step 01
+
+## Backend
+
+Command: pytest backend/tests/test_smoke_backend.py
+Result: success
+
+## Frontend
+
+Command: node frontend/src/index.js
+Result: success (console output: frontend stub)
+
+## Guards
+
+Command: python scripts/guards/ascii_guard.py
+Result: success
