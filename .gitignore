@@ -1,0 +1,6 @@
+.codex/logs/*
+!.codex/logs/.gitkeep
+.codex/sessions/*
+!.codex/sessions/.gitkeep
+node_modules/
+__pycache__/

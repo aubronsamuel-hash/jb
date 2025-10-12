@@ -1,0 +1,9 @@
+{
+  "session_id": "00000000-0000-0000-0000-000000000001",
+  "date": "2025-10-12",
+  "step": "step-01",
+  "branch": "feat/roadmap/step-01",
+  "pr_number": null,
+  "artifacts": {"prompts": ["bootstrap_v1.txt"], "reports": []},
+  "status": "awaiting-validate"
+}
