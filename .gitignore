@@ -1,0 +1,4 @@
+.codex/archives/
+.codex/sessions/
+node_modules/
+**pycache**/

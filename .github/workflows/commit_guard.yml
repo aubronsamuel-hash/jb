@@ -1,0 +1,24 @@
+name: commit-guard
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  ascii:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ASCII Guard
+        run: |
+          python3 scripts/guards/ascii_guard.py
+  roadmap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Roadmap Guard (PR body)
+        env:
+          PR_BODY_FILE: ${{ github.workspace }}/_pr_body.txt
+        run: |
+          gh pr view ${{ github.event.pull_request.number }} --json body -q .body > $PR_BODY_FILE
+          python3 scripts/guards/roadmap_guard.py
+        env:
+          GH_TOKEN: ${{ github.token }}
