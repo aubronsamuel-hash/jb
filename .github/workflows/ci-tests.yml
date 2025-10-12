@@ -1,9 +1,11 @@
 name: ci-tests
+
 on:
   pull_request:
     branches: [ main ]
   push:
     branches: [ main ]
+
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
@@ -12,14 +14,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Backend tests
+      - name: Install backend test deps
         run: |
           python -m pip install --upgrade pip
-          echo "running backend smoke"
-          python - << 'PY'
-from pathlib import Path
-print('OK backend smoke')
-PY
+          pip install -r requirements-dev.txt
+      - name: Run pytest with coverage
+        run: |
+          pytest
+
   frontend-tests:
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +29,8 @@ PY
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Frontend tests
+      - name: Install and run vitest
+        working-directory: frontend
         run: |
-          npm -v
-          node -e "console.log('OK frontend smoke')"
+          npm ci
+          npm test
