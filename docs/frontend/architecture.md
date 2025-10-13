@@ -1,12 +1,12 @@
-# Architecture Frontend - Step 03
+# Architecture Frontend - Step 04
 
-Cette note resume le socle frontend installe lors du step 03.
+Cette note resume le socle frontend et le design system minimal installe lors du step 04.
 
 ## Objectifs
 
-* Structure React + Vite + TypeScript (mode offline) conforme a la spec Orga.
-* Providers de base (Router, Query Client, Theme) relies a des stubs locaux pour permettre le dev sans dependances distantes.
-* Navigation initiale couvrant les modules majeurs (Dashboard, Planning, Missions, Equipes, Materiel, Budgets, Notifications, Parametres).
+* Maintenir la structure React + Vite + TypeScript (mode offline) conforme a la spec Orga.
+* Enrichir le theme avec tokens modes clair/sombre, palette roles et echelles (spacing, typography, elevations, transitions).
+* Fournir des helpers design system stubs utilisables pour le dashboard et les modules (badges roles, cartes KPI, resume modules).
 
 ## Organisation des Dossiers
 
@@ -23,6 +23,8 @@ frontend/
     vite-dev.js
     vite-build.js
     vite-preview.js
+    storybook.js
+    vite-shared.js
   src/
     main.js
     app/
@@ -33,6 +35,10 @@ frontend/
       navigation.js
       layouts/
         app-layout.js
+      design-system/
+        index.js
+        tokens.js
+        components.js
       views/
         dashboard-view.js
         placeholder-view.js
@@ -41,52 +47,45 @@ frontend/
       index.d.ts
   tests/
     app-routing.test.js
+    design-system.test.js
     math.test.js
   vendor/
-    (stubs react, react-dom, react-router-dom, @tanstack/react-query, tailwindcss, postcss, autoprefixer, typescript, vite)
+    (stubs react, react-dom, react-router-dom, @tanstack/react-query, tailwindcss, postcss, autoprefixer, typescript, vite, vitest)
 ```
 
-## Providers
+## Theme et Tokens
 
-* **QueryClientProvider** (stub @tanstack/react-query) : expose un cache memo in-memory.
-* **RouterProvider** (stub react-router-dom) : encapsule l arborescence de routes definie via `createBrowserRouter`.
-* **AppThemeProvider** : simple wrapper retournant les tokens Tailwind (palette, radius) pour usage futur.
+* `theme.js` expose `createAppTheme`, `appThemeTokens`, `themeModes`.
+* Modes: `light` (defaut) et `dark` avec surfaces, textes et accent dedies.
+* Palette role: lumiere, son, video, plateau, hmc, admin, artiste, production.
+* Tokens supplementaires: spacing (`xxs` -> `xxl`, `gutter`, `section`), radius (`xs` -> `xl`), typography (display -> caption), elevations, transitions.
+* `tailwind.config.ts` importe `appThemeTokens` et propage `colors`, `borderRadius`, `fontFamily`, `boxShadow`, `spacing`.
 
-`createAppRoot()` assemble QueryClientProvider -> AppThemeProvider -> RouterProvider -> layout.
+## Design System Stub
 
-## Navigation & Routes
-
-* `app/navigation.js` liste les entrees: dashboard, planning, missions, equipes, materiel, budgets, notifications, parametres.
-* `app/router.js` construit les routes a partir de ces modules avec placeholder generique.
-* Chaque vue placeholder expose titre, description, identifiant module.
+* `design-system/tokens.js`: helpers `getRoleColor`, `getSemanticColor`, `describeThemeModes`, `createThemeSnapshot`.
+* `design-system/components.js`: stubs `createRoleBadge`, `createKpiCard`, `createModuleSummary`, `createSurfaceSample`.
+* `design-system/index.js`: re-export.
+* `dashboard-view.js` utilise ces helpers pour fournir des cartes KPI et un resume module par defaut.
 
 ## Scripts npm (mode offline)
 
-* `npm run dev` : appelle `vendor/vite/bin/vite.js dev` (stub CLI affichant instructions).
-* `npm run build` : idem (mode build) ecrit un message et cree `/tmp`? -> ici log console (pas d ecriture hors repo).
-* `npm run preview` : idem (mode preview).
-* `npm test` : execute `vitest` stub apres eventuel build TS (non requis pour le moment).
-
-## Types & TypeScript
-
-* `tsconfig.json` active `allowJs` pour permettre un portage progressif TypeScript.
-* `src/types/index.d.ts` decrit les signatures publiques (`initializeApp`, `createAppRouter`, etc.).
-* Les modules JS incluent des annotations JSDoc pour faciliter l adoption TS plus tard.
-
-## Tailwind Tokens
-
-* Palette Orga (noir, gris, violet theatre, accent or) definie dans `app/theme.js` et re-exportee dans `tailwind.config.ts`.
-* Les vraies classes seront ajoutees a mesure que l UI evolue.
-
-## Offline Strategy
-
-* Tous les packages critiques sont stubs sits `frontend/vendor`.
-* `package.json` reference `file:vendor/...` pour eviter tout fetch reseau.
-* Scripts CLI (Vite/Tailwind) affichent un message explicite indiquant que c est un stub et comment proceder lors du passage a de vraies dependances.
+* `npm run dev` : stub Vite (voir `scripts/vite-*.js`).
+* `npm run build` : stub build.
+* `npm run preview` : stub preview.
+* `npm run storybook` : script documentaire indiquant comment lancer un futur Storybook.
+* `npm test` : vitest stub (tests router + design system).
 
 ## Tests
 
-* `app-routing.test.js` verifie la coherence router/navigation et `initializeApp`.
-* `math.test.js` conserve un exemple simple.
+* `app-routing.test.js` valide navigation/initializeApp et verifie le resume de theme (mode, roles, spacing).
+* `design-system.test.js` couvre `createAppTheme`, tokens roles/semantic, badges, cartes, resume modules.
+* `math.test.js` conserve l exemple simple.
 
-Cette base servira pour les steps suivants (composition UI, interactions, exports). VALIDATE requis par Sam avant integration finale.
+## Offline Strategy
+
+* Packages critiques en `frontend/vendor` (stubs). Pas d acces reseau necessaire.
+* Scripts CLI stubs rappellent comment migrer vers les dependances reelles.
+* Documentation supplementaire sous `docs/frontend/design-system.md` pour l usage des tokens.
+
+VALIDATE requis par Sam avant integration finale.

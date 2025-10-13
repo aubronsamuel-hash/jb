@@ -8,6 +8,7 @@
         "dev": "node ./scripts/vite-dev.js",
         "build": "node ./scripts/vite-build.js",
         "preview": "node ./scripts/vite-preview.js",
+        "storybook": "node ./scripts/storybook.js",
         "test": "node ./vendor/vitest/bin/vitest.js run --reporter=dot"
     },
     "dependencies": {
