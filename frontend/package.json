@@ -3,10 +3,25 @@
     "version": "0.1.0",
     "private": true,
     "type": "module",
+    "types": "src/types/index.d.ts",
     "scripts": {
-        "test": "vitest run --reporter=dot"
+        "dev": "node ./scripts/vite-dev.js",
+        "build": "node ./scripts/vite-build.js",
+        "preview": "node ./scripts/vite-preview.js",
+        "test": "node ./vendor/vitest/bin/vitest.js run --reporter=dot"
+    },
+    "dependencies": {
+        "@tanstack/react-query": "file:vendor/@tanstack/react-query",
+        "react": "file:vendor/react",
+        "react-dom": "file:vendor/react-dom",
+        "react-router-dom": "file:vendor/react-router-dom"
     },
     "devDependencies": {
+        "autoprefixer": "file:vendor/autoprefixer",
+        "postcss": "file:vendor/postcss",
+        "tailwindcss": "file:vendor/tailwindcss",
+        "typescript": "file:vendor/typescript",
+        "vite": "file:vendor/vite",
         "vitest": "file:vendor/vitest"
     }
 }

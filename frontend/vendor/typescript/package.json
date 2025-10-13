@@ -1,0 +1,12 @@
+{
+  "name": "typescript",
+  "version": "0.0.0-local",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "tsc": "bin/tsc.js"
+  },
+  "exports": {
+    ".": "./index.js"
+  }
+}
