@@ -6,7 +6,9 @@ export default {
     extend: {
       colors: appThemeTokens.colors,
       borderRadius: appThemeTokens.radius,
-      fontFamily: appThemeTokens.fontFamily
+      fontFamily: appThemeTokens.fontFamily,
+      boxShadow: appThemeTokens.elevations,
+      spacing: appThemeTokens.spacing
     }
   },
   plugins: []

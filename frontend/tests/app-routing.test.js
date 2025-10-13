@@ -53,6 +53,9 @@ describe('initializeApp', () => {
         expect(result.router.routes[0].id).toBe('app-shell');
         expect(result.rootTree.type).toBe('query-client-provider');
         const themeSummary = createThemeTokensSummary(result.theme);
-        expect(themeSummary.paletteSize > 5).toBe(true);
+        expect(themeSummary.mode).toBe('light');
+        expect(themeSummary.roles.includes('lumiere')).toBe(true);
+        expect(themeSummary.semantic.success).toBe(theme.roleColors.video);
+        expect(themeSummary.spacingKeys.includes('section')).toBe(true);
     });
 });
