@@ -1,6 +1,8 @@
 .codex/archives/
 .codex/sessions/*
 !.codex/sessions/.gitkeep
+!.codex/sessions/step-02/
+!.codex/sessions/step-02/**
 !.codex/sessions/step-01/
 !.codex/sessions/step-01/**
 !.codex/sessions/step-03/
