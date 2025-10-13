@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2024-05-06T08:00:00Z",
+  "projects": [
+    {
+      "id": "p-aurora",
+      "name": "Festival Aurora",
+      "status": "active",
+      "start": "2024-06-10",
+      "end": "2024-06-18"
+    },
+    {
+      "id": "p-riverside",
+      "name": "Riverside Sessions",
+      "status": "planning",
+      "start": "2024-07-02",
+      "end": "2024-07-12"
+    }
+  ],
+  "missions": [
+    {
+      "id": "m-light-tech",
+      "project_id": "p-aurora",
+      "title": "Balance lumiere",
+      "status": "confirmed",
+      "scheduled": "2024-06-10",
+      "duration_hours": 6
+    },
+    {
+      "id": "m-soundcheck",
+      "project_id": "p-aurora",
+      "title": "Soundcheck groupe A",
+      "status": "in-progress",
+      "scheduled": "2024-06-11",
+      "duration_hours": 4
+    },
+    {
+      "id": "m-video-calibration",
+      "project_id": "p-riverside",
+      "title": "Calibration cameras",
+      "status": "pending",
+      "scheduled": "2024-07-04",
+      "duration_hours": 5
+    },
+    {
+      "id": "m-stage-management",
+      "project_id": "p-riverside",
+      "title": "Coordination plateau",
+      "status": "planned",
+      "scheduled": "2024-07-05",
+      "duration_hours": 3
+    }
+  ],
+  "people": [
+    {
+      "id": "crew-sonia",
+      "full_name": "Sonia Lefevre",
+      "role": "son",
+      "availability": "on-duty"
+    },
+    {
+      "id": "crew-malik",
+      "full_name": "Malik Roche",
+      "role": "lumiere",
+      "availability": "on-duty"
+    },
+    {
+      "id": "crew-ines",
+      "full_name": "Ines Martel",
+      "role": "video",
+      "availability": "standby"
+    },
+    {
+      "id": "crew-jules",
+      "full_name": "Jules Pinto",
+      "role": "plateau",
+      "availability": "off"
+    }
+  ],
+  "roleLoads": [
+    {
+      "role": "son",
+      "allocated_hours": 28,
+      "available_hours": 40
+    },
+    {
+      "role": "lumiere",
+      "allocated_hours": 30,
+      "available_hours": 38
+    },
+    {
+      "role": "video",
+      "allocated_hours": 18,
+      "available_hours": 32
+    },
+    {
+      "role": "plateau",
+      "allocated_hours": 12,
+      "available_hours": 30
+    }
+  ],
+  "budgets": [
+    {
+      "project_id": "p-aurora",
+      "planned_amount": 42000,
+      "actual_amount": 44800
+    },
+    {
+      "project_id": "p-riverside",
+      "planned_amount": 31000,
+      "actual_amount": 30200
+    }
+  ],
+  "alerts": [
+    "Conflit planning: mission Soundcheck groupe A overlap avec repetition video",
+    "Budget depasse: Festival Aurora +2800 EUR",
+    "Disponibilite critique: role video sous 60%"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DashboardSnapshot",
+  "type": "object",
+  "required": [
+    "generatedAt",
+    "projects",
+    "missions",
+    "people",
+    "roleLoads",
+    "budgets",
+    "alerts"
+  ],
+  "properties": {
+    "generatedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$" },
+    "projects": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/project" }
+    },
+    "missions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/mission" }
+    },
+    "people": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/person" }
+    },
+    "roleLoads": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/roleLoad" }
+    },
+    "budgets": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/budgetLine" }
+    },
+    "alerts": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "project": {
+      "type": "object",
+      "required": ["id", "name", "status", "start", "end"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "status": { "type": "string" },
+        "start": { "type": "string" },
+        "end": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "mission": {
+      "type": "object",
+      "required": ["id", "project_id", "title", "status", "scheduled", "duration_hours"],
+      "properties": {
+        "id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "title": { "type": "string" },
+        "status": { "type": "string" },
+        "scheduled": { "type": "string" },
+        "duration_hours": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "person": {
+      "type": "object",
+      "required": ["id", "full_name", "role", "availability"],
+      "properties": {
+        "id": { "type": "string" },
+        "full_name": { "type": "string" },
+        "role": { "type": "string" },
+        "availability": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "roleLoad": {
+      "type": "object",
+      "required": ["role", "allocated_hours", "available_hours"],
+      "properties": {
+        "role": { "type": "string" },
+        "allocated_hours": { "type": "integer", "minimum": 0 },
+        "available_hours": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "budgetLine": {
+      "type": "object",
+      "required": ["project_id", "planned_amount", "actual_amount"],
+      "properties": {
+        "project_id": { "type": "string" },
+        "planned_amount": { "type": "integer" },
+        "actual_amount": { "type": "integer" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
