@@ -3,5 +3,7 @@
 !.codex/sessions/.gitkeep
 !.codex/sessions/step-01/
 !.codex/sessions/step-01/**
+!.codex/sessions/step-03/
+!.codex/sessions/step-03/**
 node_modules/
 **pycache**/
