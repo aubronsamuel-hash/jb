@@ -54,7 +54,8 @@ Commandes Locales Exemples
 
 * Backend:
   python -m pip install -r requirements-dev.txt
-  pytest -q --maxfail=1 --disable-warnings --cov=backend --cov-report=term-missing
+  pytest
+  (La couverture simplifiee est assuree par le shim interne ``pytest_cov``.)
 * Frontend:
   cd frontend
   npm ci

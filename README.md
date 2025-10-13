@@ -13,6 +13,9 @@ python -m pip install -r requirements-dev.txt
 pytest
 ```
 
+> La couverture minimale est fournie par le shim local `pytest_cov`, aucun
+> paquet externe n est requis.
+
 Frontend (vitest):
 
 ```
