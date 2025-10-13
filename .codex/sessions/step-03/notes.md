@@ -9,3 +9,4 @@
 * Ajout types TS `src/types/index.d.ts`.
 * Ajout tests `frontend/tests/app-routing.test.js`.
 * Execution `npm test` (stub vitest).
+* Verifie le lockfile en relancant `npm install` puis `npm test` pour confirmer la configuration vendor offline.

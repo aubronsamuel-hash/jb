@@ -6,3 +6,14 @@ npm warn Unknown env config "http-proxy". This will stop working in the next maj
 > node ./vendor/vitest/bin/vitest.js run --reporter=dot
 
 .........
+---
+$ npm install
+added 9 packages in 388ms
+
+$ npm test
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> frontend-codex-bootstrap@0.1.0 test
+> node ./vendor/vitest/bin/vitest.js run --reporter=dot
+
+.........
