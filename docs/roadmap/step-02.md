@@ -1,68 +1,46 @@
 # Step 02 - Consolidation Codex et Tests Reels
 
-But
+## Contexte
 
-* Remplacer les stubs par de vrais tests back (pytest) et front (vitest).
-* Mettre a jour la CI pour executer ces suites de tests reelles.
-* Documenter l usage local minimal.
+Step 01 a seulement pose des stubs pour valider la tuyauterie CI. Cette iteration doit prouver que le projet peut executer de vrais tests backend et frontend, produire de la couverture minimale et documenter les commandes locales. Le but final est de securiser une boucle de feedback realiste avant de lancer la phase frontend riche de Step 03.
 
-Contexte
+## Backlog cible
 
-* Step 01 a cree l arborescence, les guards, et des stubs.
-* Ce step doit prouver que l environnement de test tourne en conditions reelles.
+| Tache | Description | Livrable |
+| ----- | ----------- | -------- |
+| S2-T1 | Ajouter une fonction utilitaire concrete cote backend et la tester avec pytest + couverture. | `backend/app/utils.py`, `backend/tests/test_utils.py`, `pytest.ini`, `requirements-dev.txt` |
+| S2-T2 | Introduire un module JS simple et ses tests vitest pour valider le runner frontend. | `frontend/src/math.js`, `frontend/tests/math.test.js`, `frontend/package.json`, `frontend/package-lock.json` |
+| S2-T3 | Mettre a jour la CI pour lancer pytest et vitest reels. | `.github/workflows/ci-tests.yml` |
+| S2-T4 | Documenter les commandes de tests locaux pour Windows/PowerShell. | `README.md` |
+| S2-T5 | Archiver la session dans `.codex` (notes et tests). | `.codex/sessions/step-02/` |
 
-Taches
+## Definition of Done
 
-1. Backend (pytest)
+Deliverables:
 
-   * Ajouter une fonction utilitaire simple et testee (ex: addition) dans backend/app/utils.py
-   * Ajouter des tests sous backend/tests/ pour pytest avec couverture.
-   * Fichier pytest.ini pour config basique.
-   * requirements-dev.txt pour installer pytest et pytest-cov.
+* Fonction utilitaire backend `add` avec conversions simples et tests couvrant cas positifs, negatifs et melanges.
+* Tests frontend vitest garantissant le module `math.js`.
+* Workflow GitHub Actions lancant pytest (avec couverture via shim local) et vitest via npm.
+* Documentation README detaille la procedure locale backend/frontend.
+* Archives de session disponibles sous `.codex/sessions/step-02/` (notes, logs de tests).
 
-2. Frontend (vitest)
+Acceptance Criteria:
 
-   * Ajouter un module JS simple (ex: addition) dans frontend/src/math.js
-   * Ajouter un test vitest sous frontend/tests/
-   * Ajouter un package.json minimal et un lock (lock sera genere par npm ci) pour executer vitest.
+* `pytest` retourne un exit code 0 et genere la couverture XML via le shim `pytest_cov`.
+* `npm test` dans `frontend/` retourne un exit code 0 avec vitest stub.
+* Workflow CI `ci-tests` contient deux jobs (`backend-tests`, `frontend-tests`).
+* Documentation ASCII-only et oriente Windows.
 
-3. CI
+## Evidence et archivage
 
-   * Modifier .github/workflows/ci-tests.yml pour executer pytest et vitest reellement.
+* Notes: `.codex/sessions/step-02/notes.md`.
+* Logs tests: `.codex/sessions/step-02/tests.log`.
+* Reference PR: `Ref: docs/roadmap/step-02.md`.
 
-4. Docs
+## Notes de travail
 
-   * Ajouter une section README: comment lancer les tests localement.
-
-Deliverables
-
-* Code backend: backend/app/utils.py
-* Tests backend: backend/tests/test_utils.py, pytest.ini, requirements-dev.txt
-* Code frontend: frontend/src/math.js
-* Tests frontend: frontend/tests/math.test.js, frontend/package.json
-* CI mise a jour: .github/workflows/ci-tests.yml
-* README mis a jour (section Tests Locaux)
-
-Acceptance Criteria
-
-* CI verte: jobs backend-tests et frontend-tests s executent et reussissent.
-* Couverture backend publiee en XML (au minimum generee localement).
-* Vitest retourne exit code 0.
-* Aucune violation ASCII.
-
-Commandes Locales Exemples
-
-* Backend:
-  python -m pip install -r requirements-dev.txt
-  pytest
-  (La couverture simplifiee est assuree par le shim interne ``pytest_cov``.)
-* Frontend:
-  cd frontend
-  npm ci
-  npm test
-
-Notes
-
-* Maintenir la reference PR avec: Ref: docs/roadmap/step-02.md
+* Prompt utilisateur initial: "GO STEP 2".
+* Conserver les packages offline en evitant toute dependance reseau.
+* Utiliser les shims `pytest_cov` et `frontend/vendor/vitest` pour stabilite CI.
 
 VALIDATE? yes/no
