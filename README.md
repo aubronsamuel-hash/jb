@@ -8,7 +8,7 @@ Le frontend React/Vite reste en mode offline avec stubs locaux. Cette etape ajou
 
 * Entrypoint : `frontend/src/main.js` expose `initializeApp()`.
 * Providers : Query Client, Theme tokens, Router (voir `docs/frontend/architecture.md`).
-* Design system : tokens modes clair/sombre, palette roles, helpers (`createRoleBadge`, `createKpiCard`, `createModuleSummary`). Documentation sous `docs/frontend/design-system.md`.
+* Design system : tokens modes clair/sombre, palette roles, helpers (`createRoleBadge`, `createKpiCard`, `createModuleSummary`, `createNavigationRoleBadges`). Documentation sous `docs/frontend/design-system.md`.
 * Navigation : Dashboard, Planning, Missions, Equipes, Materiel, Budgets, Notifications, Parametres.
 * Configs : `frontend/vite.config.ts`, `frontend/tailwind.config.ts`, `frontend/tsconfig.json`, `frontend/postcss.config.cjs`.
 

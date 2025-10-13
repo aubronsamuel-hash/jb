@@ -1,11 +1,17 @@
 import { Link, Outlet } from 'react-router-dom';
-import { appNavigation } from '../navigation.js';
+import { describeThemeModes } from '../design-system/index.js';
+import { appNavigation, createNavigationRoleBadges } from '../navigation.js';
 
 export function AppLayout({ theme, navigation = appNavigation }) {
+  const designSystem = {
+    themeModes: describeThemeModes(),
+    navigationBadges: createNavigationRoleBadges({ navigation, theme })
+  };
   return {
     type: 'app-layout',
     theme,
     navigation,
+    designSystem,
     children: [
       {
         type: 'app-header',

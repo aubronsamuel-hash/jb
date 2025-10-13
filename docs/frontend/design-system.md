@@ -19,6 +19,8 @@ frontend/src/app/
     index.js              # Point d entree pour import facilite
 ```
 
+Le module `navigation.js` rattache les roles metiers aux entrees principales et expose `createNavigationRoleBadges` pour produire des badges relies aux tokens.
+
 ## Tokens Principaux
 
 * **Modes**: `light` (par defaut) et `dark`. Chaque mode expose `background`, `surface`, `surfaceAlt`, `text`, `border`, `muted`.
@@ -39,6 +41,7 @@ frontend/src/app/
 * `createRoleBadge({ id, label, role, tone })`: structure JSON `{ type: 'ds-role-badge', role, color, tone, label }`.
 * `createKpiCard({ id, title, value, trend })`: structure JSON `{ type: 'ds-kpi-card', surface, emphasis, metrics }`.
 * `createModuleSummary({ id, title, description, roles })`: structure JSON reliant roles a leurs couleurs.
+* `createNavigationRoleBadges({ navigation, theme })`: retourne une liste `{ target, badges[] }` utilisant `createRoleBadge` avec un tone `outline`.
 
 Ces helpers ne produisent pas de DOM mais facilitent les tests et un futur portage vers des composants React (shadcn/ui, etc.).
 
@@ -52,9 +55,9 @@ Ces helpers ne produisent pas de DOM mais facilitent les tests et un futur porta
 
 * La generation de theme pour `light` et `dark` (background, text, semantic colors).
 * La disponibilite des couleurs role et la logique de fallback.
-* Les helpers `createRoleBadge`, `createKpiCard`, `createModuleSummary` et `describeThemeModes`.
+* Les helpers `createRoleBadge`, `createKpiCard`, `createModuleSummary`, `describeThemeModes` et `createNavigationRoleBadges`.
 
-Les tests existants (`app-routing.test.js`) sont ajustes pour exploiter le resume de theme mis a jour.
+Les tests existants (`app-routing.test.js`) sont ajustes pour exploiter le resume de theme et la decoration design system du layout.
 
 ## Utilisation Futur
 
