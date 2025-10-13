@@ -2,13 +2,14 @@
 
 Ce depot est initialise par l agent Codex pour un cycle de dev autonome base sur steps. Voir `docs/roadmap` et `AGENT.codex.md`.
 
-## Frontend Orga (Step 04)
+## Frontend Orga (Step 05)
 
-Le frontend React/Vite reste en mode offline avec stubs locaux. Cette etape ajoute un design system minimal conforme a la spec visuelle.
+Le frontend React/Vite reste en mode offline avec stubs locaux. Cette etape ajoute un snapshot Orga deterministe et relie le dashboard aux helpers du design system.
 
 * Entrypoint : `frontend/src/main.js` expose `initializeApp()`.
 * Providers : Query Client, Theme tokens, Router (voir `docs/frontend/architecture.md`).
-* Design system : tokens modes clair/sombre, palette roles, helpers (`createRoleBadge`, `createKpiCard`, `createModuleSummary`, `createNavigationRoleBadges`). Documentation sous `docs/frontend/design-system.md`.
+* Design system : tokens modes clair/sombre, palette roles, helpers (`createRoleBadge`, `createKpiCard`, `createModuleSummary`, `createNavigationRoleBadges`) et layout dashboard (`createDashboardLayout`). Documentation sous `docs/frontend/design-system.md`.
+* Snapshot Orga : `frontend/public/data/dashboard-snapshot.json` (generer via `python -m scripts.export_dashboard_snapshot`). Charge offline par `loadDashboardSnapshot()`.
 * Navigation : Dashboard, Planning, Missions, Equipes, Materiel, Budgets, Notifications, Parametres.
 * Configs : `frontend/vite.config.ts`, `frontend/tailwind.config.ts`, `frontend/tsconfig.json`, `frontend/postcss.config.cjs`.
 

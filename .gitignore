@@ -9,5 +9,7 @@
 !.codex/sessions/step-03/**
 !.codex/sessions/step-04/
 !.codex/sessions/step-04/**
+!.codex/sessions/step-05/
+!.codex/sessions/step-05/**
 node_modules/
 **pycache**/

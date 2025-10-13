@@ -66,3 +66,11 @@ Les tests existants (`app-routing.test.js`) sont ajustes pour exploiter le resum
 * Les feuilles de route pourront reutiliser `getRoleColor` pour colorer les services.
 
 La migration vers un Storybook reel consistera a remplacer le stub par `@storybook/react-vite` et a reexporter ces helpers en composants React tipises.
+
+## Dashboard (Step 05)
+
+* `frontend/src/app/api/dashboard-api.js` charge le snapshot JSON versionne (offline) et renvoie une copie immuable.
+* `frontend/src/app/components/dashboard-layout.js` structure les sections dashboard sous forme d objet (pas de DOM) avec une grille ASCII.
+* `DashboardView` (Step 05) compose `createKpiCard`, `createRoleBadge` et `createModuleSummary` pour afficher KPIs, charges roles et resumes modules.
+* Les alertes sont injectees dans la section layout via des objets `{ id, type, severity, message }` pour faciliter l adaptation future en React.
+* Les tests `frontend/tests/dashboard-view.test.js` verifient que la vue retourne l ensemble des sections attendues.
