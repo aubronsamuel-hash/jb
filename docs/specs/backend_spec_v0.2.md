@@ -100,6 +100,17 @@ backend/
   scripts/          # ps1 helpers
 ```
 
+Service layering:
+
+* Routers stay thin; they parse/validate requests and call services.
+* Services implement business rules and compose repositories and adapters.
+* Repositories isolate SQLAlchemy usage; no raw queries outside repositories.
+* Background jobs reuse the same services layer to avoid divergent logic.
+* Shared DTOs live under app/schemas and are reused by routers and workers.
+
+Cross-cutting packages (core/, observability/, audit/) expose helpers that may
+be imported by any module; all other packages depend only on core/ + schemas.
+
 ---
 
 ## 3. Multi tenancy & RBAC model
@@ -117,6 +128,21 @@ Roles (baseline):
 * manager: manage planning inside projects they own or are assigned to.
 * worker: read own assignments, confirm/decline, timesheets self.
 * viewer: read-only org scope.
+
+Default mappings:
+
+* On org creation: creator becomes owner, owner also granted manager role on
+  seed project for onboarding walkthrough.
+* Each membership row stores primary_role plus optional scopes (project ids)
+  when role == manager.
+
+RBAC enforcement:
+
+* Dependencies inject CurrentUser context (user_id, org_id, roles, scopes).
+* Decorator `require_role(roles: list[str])` guards routers.
+* Manager access: service methods accept optional project scope and check
+  membership scopes before fetching data.
+* Worker endpoints auto restrict by user_id == current user.
 
 Permission matrix (excerpt):
 
@@ -188,6 +214,16 @@ Row validators:
 IDs:
 
 * Use bigint PK or ULID (string) for external exposure. For v0.2 keep bigint.
+* External ids follow pattern `apli_<base62>` to simplify later migration.
+
+Enumerations:
+
+* mission.status: draft|scheduled|completed|cancelled.
+* shift.role: free text but validated against known skills when provided.
+* assignment.status: proposed|confirmed|declined|cancelled.
+* availability.status: available|busy|tentative.
+* invoice_stub.status: draft|sent|paid|cancelled.
+* notification.status: pending|sent|failed.
 
 ---
 
@@ -507,6 +543,7 @@ Rate limits:
 
 * Auth: 60 req/min/IP; login: 10/min/IP; password reset: 3/hour/email.
 * API: 1000 req/min/org; burst 200.
+* Webhook deliveries: 30 attempts/min/endpoint to avoid flooding.
 
 ---
 
@@ -524,6 +561,12 @@ GDPR:
 
 * DSR endpoints: GET /gdpr/export/self, POST /gdpr/delete/self (queued, soft delete account, mask PII, keep audit min data).
 * Data minimization: optional fields off by default.
+
+Data residency & encryption:
+
+* Postgres encrypted at rest via cloud provider (if self hosted use pgcrypto).
+* S3 bucket enforces SSE-S3; keys rotated annually.
+* Redis configured with AUTH secret and TLS when supported by env.
 
 Backups:
 
@@ -555,6 +598,16 @@ ACCESS_TOKEN_TTL_MIN=15
 REFRESH_TOKEN_TTL_DAYS=14
 RATE_LIMIT_PER_ORG_PER_MIN=1000
 ```
+
+Environment matrix:
+
+* dev: docker compose, seeded data, debug logging, mailhog/console outputs.
+* staging: mirrors prod sizing, feature flags default ON, CI deploys on main.
+* prod: replica count >= 2, debug disabled, telemetry exporters targeting ops
+  stack, cron jobs enabled.
+
+Configuration precedence: env vars > secrets manager > .env file. PowerShell
+scripts load `.env` and allow overrides via `-Env` parameter.
 
 ---
 
@@ -592,6 +645,17 @@ GitHub Actions jobs:
 * roadmap_guard: step ref present in commits
 * release: tag vX.Y.Z, push image
 
+Quality gates:
+
+* All jobs must pass on PR before merge; branch protection on main.
+* Required reviewers: backend lead + product (Sam) for specs touching docs.
+* CI comments back OpenAPI diff and coverage deltas.
+
+Deployment:
+
+* Successful main build triggers staging deploy; prod requires manual approve
+  with change ticket id logged in release notes.
+
 ---
 
 ## 18. Versioning & deprecation
@@ -599,6 +663,13 @@ GitHub Actions jobs:
 * API path /api/v1; breaking changes only in v2.
 * Deprecation header: X-API-Deprecated: true; X-API-EOL: 2026-03-31.
 * Changelog in docs/CHANGELOG.md.
+
+Version policy:
+
+* Additive changes only within v1.x; remove fields via deprecation cycle
+  (announce -> 90d overlap -> remove).
+* Publish migration guides in docs/specs when introducing non-breaking but
+  impactful behavior changes (ex: new mandatory query param for exports).
 
 ---
 
