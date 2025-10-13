@@ -7,6 +7,6 @@
         "test": "vitest run --reporter=dot"
     },
     "devDependencies": {
-        "vitest": "^1.6.0"
+        "vitest": "file:vendor/vitest"
     }
 }
