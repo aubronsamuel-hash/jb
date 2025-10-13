@@ -66,6 +66,7 @@ frontend/
 * `design-system/tokens.js`: helpers `getRoleColor`, `getSemanticColor`, `describeThemeModes`, `createThemeSnapshot`.
 * `design-system/components.js`: stubs `createRoleBadge`, `createKpiCard`, `createModuleSummary`, `createSurfaceSample`.
 * `design-system/index.js`: re-export.
+* `navigation.js` expose `createNavigationRoleBadges` pour generer des badges par entree via `createRoleBadge`.
 * `dashboard-view.js` utilise ces helpers pour fournir des cartes KPI et un resume module par defaut.
 
 ## Scripts npm (mode offline)
@@ -78,8 +79,8 @@ frontend/
 
 ## Tests
 
-* `app-routing.test.js` valide navigation/initializeApp et verifie le resume de theme (mode, roles, spacing).
-* `design-system.test.js` couvre `createAppTheme`, tokens roles/semantic, badges, cartes, resume modules.
+* `app-routing.test.js` valide navigation/initializeApp, le resume de theme et le contexte design system du layout (badges par role).
+* `design-system.test.js` couvre `createAppTheme`, tokens roles/semantic, badges, cartes, resume modules et l integration navigation (`createNavigationRoleBadges`).
 * `math.test.js` conserve l exemple simple.
 
 ## Offline Strategy

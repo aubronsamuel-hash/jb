@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createAppTheme } from '../src/app/theme.js';
 import { getRoleColor, getSemanticColor, describeThemeModes, createThemeSnapshot } from '../src/app/design-system/tokens.js';
 import { createRoleBadge, createKpiCard, createModuleSummary, createSurfaceSample } from '../src/app/design-system/components.js';
+import { createNavigationRoleBadges } from '../src/app/navigation.js';
 
 describe('createAppTheme', () => {
     it('exposes light mode tokens by default', () => {
@@ -91,5 +92,16 @@ describe('design system components', () => {
         expect(sample.type).toBe('ds-surface-sample');
         expect(sample.background).toBe('#f5f7fb');
         expect(sample.border).toBe('#d5dae6');
+    });
+});
+
+describe('navigation integration', () => {
+    it('builds navigation role badges using design system helpers', () => {
+        const badgeGroups = createNavigationRoleBadges();
+        expect(badgeGroups.length > 0).toBe(true);
+        const dashboardGroup = badgeGroups.find((group) => group.target === 'dashboard');
+        expect(dashboardGroup != null).toBe(true);
+        expect(dashboardGroup.badges.length > 0).toBe(true);
+        expect(dashboardGroup.badges[0].type).toBe('ds-role-badge');
     });
 });

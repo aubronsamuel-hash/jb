@@ -23,6 +23,17 @@ describe('app router configuration', () => {
         expect(summary[0].id).toBe('app-shell');
         expect(summary[0].hasChildren).toBe(true);
     });
+
+    it('decorates the layout with design system context', () => {
+        const theme = createAppTheme();
+        const config = createRouteConfig({ theme });
+        const layout = config[0].element;
+        expect(Array.isArray(layout.designSystem.themeModes)).toBe(true);
+        expect(layout.designSystem.themeModes.length >= 2).toBe(true);
+        expect(layout.designSystem.navigationBadges.length).toBe(appNavigation.length);
+        const firstBadgeGroup = layout.designSystem.navigationBadges[0];
+        expect(firstBadgeGroup.badges.every((badge) => badge.type === 'ds-role-badge')).toBe(true);
+    });
 });
 
 describe('query client configuration', () => {
