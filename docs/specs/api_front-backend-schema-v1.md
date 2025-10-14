@@ -15,6 +15,33 @@
 * Idempotence pour POST sensibles: header `Idempotency-Key: <uuid>`
 * Caches: ETag/If-None-Match sur GET (304 si non modifie)
 
+### Headers communs
+
+* `Authorization: Bearer <access_jwt>` (access 15 min, refresh 12 h via `/auth/refresh`).
+* `X-Request-ID: <uuid>` genere cote client pour traquer les erreurs.
+* `X-Client: coulisses-web@1.x` pour differencier SPA/CLI.
+* `X-Timezone: Europe/Paris` (IANA) afin d ajuster les reponses planning.
+* `X-Platform: windows` (PowerShell 7+) utile pour telemetry support.
+* `Idempotency-Key: <uuid>` requis pour POST/PATCH critiques (planning/events, payroll/timesheets, files/presign).
+* `Accept-Language: fr-FR` pour les messages d erreur localises.
+
+### Pagination et filtres
+
+* Curseur: la reponse retourne `next_cursor`; fournir `cursor=<token>` pour page suivante.
+* `limit` borne entre 1 et 200; defaut 50, `limit=200` autorise les exports planifies.
+* `sort` accepte plusieurs champs separes par virgule (`sort=start:asc,title:desc`).
+* Les filtres multi-valeurs utilisent virgule (`status=confirmed,cancelled`).
+* Les plages temporelles acceptent inclusif `start=2025-11-01T00:00:00Z&end=2025-11-30T23:59:59Z`.
+
+### Securite et performances globales
+
+* JWT access valide 15 min, refresh 12 h; rotation sur chaque `/auth/refresh`.
+* Toutes les requetes doivent inclure `X-Request-ID`; le backend retourne le meme header pour correlation logs.
+* Les reponses supportent gzip; le frontend doit laisser `Accept-Encoding` par defaut.
+* 429 retourne `Retry-After` (secondes). React Query doit respecter ce delai avant retry manuel.
+* Toutes les operations ecriture supportent verrous optimistes via header `If-Match` (ETag) lorsque present.
+* Les webhooks externes sont signes via header `X-Signature-SHA256` (non consomme par le front).
+
 Rate limit: 120 req/min/IP (429). RBAC serveur via claim `roles=["ADMIN","MANAGER","TECH","ACCOUNTANT"]`.
 
 ## 0. Modele d erreur
@@ -67,7 +94,13 @@ Query: `limit,cursor,search,role,status`
 { "email":"...","first_name":"...","last_name":"...","roles":["TECH"],"password":"***" }
 ```
 
-Response 201: `{ "id":"uuid" }`
+Response 201: `{ "id":"uuid", "status":"invited" }`
+
+Notes:
+
+* RBAC: seuls ADMIN et MANAGER peuvent creer un utilisateur.
+* Validation: email unique (409 conflict), mot de passe >= 12 chars.
+* Idempotence: fournir `Idempotency-Key` pour eviter doublons invites.
 
 ### GET /v1/users/{id}
 
@@ -110,6 +143,28 @@ Endpoints:
 * `GET /v1/missions/{id}` (detail + `assignments[]`)
 * `PATCH /v1/missions/{id}` (update partiel)
 * `DELETE /v1/missions/{id}` -> 204
+
+Reponse `GET /v1/missions/{id}`:
+
+```
+{
+  "id":"uuid",
+  "title":"...",
+  "location":"...",
+  "start":"...",
+  "end":"...",
+  "status":"confirmed",
+  "assignments":[{"id":"uuid","user_id":"uuid","status":"accepted"}],
+  "inventory":[{"item_id":"uuid","qty":2}],
+  "audit":{
+    "created_by":"uuid",
+    "created_at":"...",
+    "updated_at":"..."
+  }
+}
+```
+
+Conflits: 409 si chevauchement planning detecte par service de validation.
 
 ### 3.1 Fichiers mission
 
@@ -174,6 +229,10 @@ Endpoints:
 * `PATCH /v1/planning/events/{id}`
 * `DELETE /v1/planning/events/{id}`
 
+RBAC: MANAGER modifie tout, TECH modifie ses propres evenements (ownership via token `sub`).
+
+409 `conflict` si modification overlappant un event verrouille (`status=busy`).
+
 Exports:
 
 * `GET /v1/planning/export.ics?start=..&end=..&scope=USER:uuid|ALL`
@@ -223,6 +282,8 @@ Endpoints:
 * `GET /v1/inventory/items/{id}`
 * `PATCH /v1/inventory/items/{id}`
 * `DELETE /v1/inventory/items/{id}`
+
+Performance: endpoints inventaire exposent header `X-Total-Count` pour counters front.
 
 Liens mission:
 
@@ -377,9 +438,30 @@ Resume: `GET /v1/payroll/summary?date_start=..&date_end=..&group_by=user|mission
 
 ## 12. Enchainements front
 
-1. Login -> dashboard: POST /auth/login, GET /planning/events, GET /missions?limit=20&status=confirmed, GET /notifications?limit=20.
-2. Drag and drop planning: PATCH /planning/events/{id}, POST /planning/check-conflicts.
-3. Assignation rapide: POST /missions/{id}/assignments, PATCH /notifications/{id}.
+### 12.1 Login -> dashboard initial
+
+1. `POST /v1/auth/login` avec email/password -> stocker `access_token`, `refresh_token`, `user`.
+2. Prefetch React Query:
+   * `GET /v1/planning/events?start=<today-1d>&end=<today+14d>&resource_type=USER&resource_id=<user.id>` clef `['planning','range',start,end,userId]`.
+   * `GET /v1/missions?limit=20&status=confirmed` clef `['missions',{status:'confirmed',limit:20}]`.
+   * `GET /v1/notifications?limit=20` clef `['notifications',{limit:20}]`.
+3. Charger profil utilisateur via `GET /v1/users/me` pour rafraichir roles et fuseau.
+4. Rafraichir token: intercepteur 401 -> `POST /v1/auth/refresh` (une seule tentative) puis retry requete initiale.
+
+### 12.2 Drag and drop planning
+
+1. L utilisateur deplace un event -> emet `PATCH /v1/planning/events/{id}` payload `start`, `end`, `resource_id`.
+2. Backend renvoie 200 + event mis a jour, ETag pour verrous.
+3. En cas de 409, declencher `POST /v1/planning/check-conflicts` avec `events=[{id,start,end,resource_id}]` et afficher suggestions.
+4. Invalidations React Query: `invalidateQueries(['planning','range',...])` et `invalidateQueries(['missions',{id:event.mission_id}])` si associe.
+5. Mettre a jour store Zustand pour reflet immediat (optimistic update) et revert si echec.
+
+### 12.3 Assignation rapide
+
+1. `POST /v1/missions/{id}/assignments` avec `user_id`, `role`, `status`.
+2. Sur succes 201, prefetch `GET /v1/missions/{id}` et `GET /v1/users/{user_id}` pour garder caches a jour.
+3. Marquer notification lue: `PATCH /v1/notifications/{notification_id}` -> `{ "read": true }`.
+4. Si l utilisateur cible est connecte, websocket interne diffuse event `assignment.created` (front ecoute canal Pusher-like) pour mise a jour temps reel.
 
 ## 13. OpenAPI extrait
 
@@ -436,13 +518,49 @@ components:
 
 ## 14. Checklist integration front
 
-* Schemas Zod alignes, `safeParse` + mapping erreurs
-* Intercepteurs 401 -> refresh -> retry (1 fois) sinon logout
-* Headers communs: `Authorization`, `X-Client: web`, `X-Request-ID`
-* Clefs React Query: `['missions', params]`, `['planning','range',start,end]`
-* Upload: presign -> PUT S3 -> PATCH ressource avec `file_url`
+### Schemas et validation
 
-## 15. Annexes
+* Definir Zod schemas par module (`zMission`, `zPlanningEvent`, `zTimesheet`).
+* Utiliser `safeParse` et mapper `result.error.issues` vers format `ProblemDetails.errors`.
+* Normaliser dates via `z.string().transform((value) => dayjs.utc(value))` pour eviter drift fuseau.
+
+### Intercepteurs et auth
+
+* Intercepteur Axios/Fetch sur 401 -> `POST /v1/auth/refresh` (une tentative). Rejeter si second 401 pour forcer logout.
+* Ajouter hook `useAuthTokens` stockant tokens dans `localStorage` chiffrage AES (crypto-js) + memory cache.
+* Propager `X-Request-ID` genere par `crypto.randomUUID()` par requete.
+
+### React Query
+
+* Clefs: `['missions',{filters}]`, `['mission',id]`, `['planning','range',start,end,resourceId]`, `['inventory','items',params]`, `['payroll','timesheets',params]`.
+* `staleTime`: 60s pour missions confirmees, 15s pour planning, 300s pour inventaire.
+* `retry`: 0 sur mutations (evite doublons), 2 sur queries GET avec `retryDelay` exponential (respect `Retry-After`).
+* Utiliser `queryClient.setQueryData` pour updates optimistes (assignations, notes).
+
+### Upload fichiers
+
+1. `POST /v1/missions/{id}/files/presign` avec `filename`, `content_type`.
+2. Executer `Invoke-WebRequest -Uri <upload_url> -Method Put -InFile <path>` (PowerShell) ou `fetch` browser direct.
+3. `PATCH /v1/missions/{id}` avec `file_url` retourne par presign.
+4. Sur echec PUT (403, 5xx) re-demander presign pour nouveau upload.
+
+### Observabilite et perf
+
+* Logger `X-Request-ID`, `duration_ms`, status dans Sentry/newRelic.
+* Activer `keepalive: true` sur fetch pour reutilisation connexion HTTP/2.
+* Utiliser `AbortController` pour annuler requetes planning lors de DnD successifs.
+
+## 15. Guardrails securite/perf
+
+* Auth: rotation refresh a chaque appel, invalider tous tokens via `POST /v1/auth/logout` (204) -> backend blackliste refresh (table Redis TTL 12 h).
+* Permissions: middleware FastAPI `require_roles` enforce RBAC (403) + journaux `audit_log` (mission updates, payroll exports).
+* Donnees sensibles: champs `notes_privees` jamais retournes au front sans role ADMIN.
+* Rate limiting: 429 -> front affiche toast "Trop de requetes" + bouton retry manuel apres `Retry-After`.
+* Performance: endpoints planning/inventaire caches 30s via CDN (Cache-Control). Utiliser `If-None-Match` pour deltas.
+* Observabilite: logs structure via `X-Request-ID`, traces OpenTelemetry `traceparent` (propager si present dans reponse).
+
+## 16. Annexes
 
 * RBAC front: ADMIN all, MANAGER manage_missions/view_planning/edit_planning/manage_inventory, TECH view_planning/self_timesheets, ACCOUNTANT view_payroll/manage_payroll.
 * Statuts: Mission `draft|confirmed|cancelled`, Assignment `invited|accepted|declined|confirmed`, Inventory `ok|maintenance|missing`, PlanningEvent `planned|busy|tentative`.
+* Mapping erreurs -> UI: 401 -> redirection login, 403 -> page interdite, 409 -> modal conflit, 422 -> inline form errors.
