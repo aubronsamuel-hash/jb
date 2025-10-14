@@ -88,3 +88,11 @@ Les rosters techniciens sont disponibles au format CSV ASCII (CRLF).
 * Endpoint : `GET /api/rosters/crew-roster.csv?date=YYYY-MM-DD[&statuses=confirmed,in-progress]` (`text/csv; charset=utf-8`).
 * Script : `python -m scripts.export_roster_csv --date 2024-06-10 --out build/rosters/crew-roster-2024-06-10.csv`.
 * Documentation : `docs/backend/crew-roster-csv.md`.
+
+## Budget Variance ASCII Report (Step 17)
+
+Le rapport budgets vs reels est disponible en texte ASCII (CRLF).
+
+* Endpoint : `GET /api/budgets/budget-variance.txt[?threshold=5000]` (`text/plain; charset=utf-8`).
+* Script : `python -m scripts.export_budget_variance --out build/budgets/budget-variance.txt --threshold 5000`.
+* Documentation : `docs/backend/budget-variance-report.md`.

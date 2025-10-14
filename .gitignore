@@ -35,3 +35,5 @@ node_modules/
 !.codex/sessions/step-15/**
 !.codex/sessions/step-16/
 !.codex/sessions/step-16/**
+!.codex/sessions/step-17/
+!.codex/sessions/step-17/**
