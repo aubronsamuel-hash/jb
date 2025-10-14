@@ -57,6 +57,8 @@ npm run e2e        # Stub Playwright (guides e2e)
 ## Tests et qualite
 
 * `frontend/tests/*.test.ts` couvre bootstrap app (router, providers) et les composants UI accessibles.
+* `frontend/tests/api-client.test.js` verifie la normalisation des erreurs 409/422 et les toasts ASCII (`ApiClientError`).
+* `frontend/tests/planning-assignments.test.js` valide la sanitation du flux pagination et le message aria-live.
 * Vitest reste embarque (`vendor/vitest`) -> pas d installation externe.
 * Playwright/Storybook exposes des scripts stubs pour guider la future integration CI.
 
@@ -66,6 +68,14 @@ npm run e2e        # Stub Playwright (guides e2e)
 * Roles ARIA explicites pour les composants UI et layout (`banner`, `main`, `dialog`, `tooltip`, `table`).
 * Contraste AA assure via palette neutre + accents (blue 500 / green 500) et surfaces `createAppTheme()`.
 * Etat offline : assets Tailwind et React charges via dossiers `vendor/` (ASCII-only, compatible air-gap).
+* `computeAssignmentAccessibilityHints()` fournit un resume ASCII (total, confirmes, en attente, declines) annonce via `aria-live` sur la liste planning.
+
+## Step 12 - Ajustements QA
+
+* `ApiClient.normalizeError()` retourne un `ApiClientError` type avec codes `invalid_pagination`, `cursor_not_found`, `conflict` et un message ASCII adapte aux toasts Windows.
+* `ApiClientError.toToastMessage()` distingue 409 (conflit assignation), 422 (validation) et autres indisponibilites.
+* `sanitizeAssignmentFeed()` nettoie le payload backend `/api/planning/assignments` avant injection React Query.
+* Les toasts/accessibilite sont testes via Vitest pour garantir compatibilite PowerShell + NVDA.
 
 ## Etapes suivantes
 

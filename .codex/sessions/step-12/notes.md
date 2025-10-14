@@ -1,5 +1,5 @@
 # Step 12 Notes
 
-* Initie la planification de la phase QA: collecte des retours, priorisation et couverture des flux critiques login/planning/assignation.
-* Detaille les correctifs attendus cote FastAPI (pagination, idempotence, codes erreurs) et frontend (React Query, UX, accessibilite) pour adresser les tickets QA.
-* Prepare la consolidation documentaire et la checklist release (tests, evidences ASCII, sync squads) a archiver dans `.codex/sessions/step-12/`.
+* Consolidation des tickets QA critiques/majeurs (QA-101/134/137/139/090) et archivage dans `docs/qa/step-12-feedback.md`.
+* Implementation backend: `HttpError` + endpoint `/api/planning/assignments` avec pagination curseur et tests pytest.
+* Ajustements frontend: `ApiClientError` (toasts 409/422), sanitation planning et annonces NVDA documentees + checklist release publiee.

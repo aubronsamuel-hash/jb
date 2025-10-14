@@ -1,1 +1,3 @@
-No automated tests executed (documentation planning update).
+python -m pip install -r requirements-dev.txt  # proxy bloque, dependances deja presentes (voir warnings)
+pytest
+npm test --silent  # depuis frontend/
