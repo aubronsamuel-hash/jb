@@ -1,0 +1,38 @@
+"""CLI helper to export deterministic calendar ICS feeds."""
+import argparse
+from pathlib import Path
+
+from backend.app.services.calendar import available_scopes, build_calendar_feed, normalize_scope
+
+
+def export(scope: str, token: str, destination: Path) -> Path:
+    """Generate the ICS feed for the scope and write it to the destination."""
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    payload = build_calendar_feed(scope, token)
+    destination.write_text(payload, encoding="utf-8")
+    return destination
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Export Coulisses Crew calendar feeds (ICS).")
+    parser.add_argument("--scope", default="ALL", help="Scope identifier (ALL or USER:<id> or PROJECT:<id>).")
+    parser.add_argument("--token", help="Feed token. Defaults to sample token for the scope.")
+    parser.add_argument("--out", default="build/calendar/assignments.ics", help="Output path for the ICS file.")
+    args = parser.parse_args(argv)
+
+    normalized_scope = normalize_scope(args.scope)
+    tokens = available_scopes()
+    token = args.token or tokens.get(normalized_scope)
+    if token is None:
+        parser.error(f"No token available for scope '{normalized_scope}'. Provide --token explicitly.")
+
+    path = export(normalized_scope, token, Path(args.out))
+    print(f"Scope: {normalized_scope}")
+    print(f"Token: {token}")
+    print(f"ICS: {path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -4,10 +4,11 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from inspect import signature
-from typing import Callable, Dict, Iterable, Mapping, Tuple
+from typing import Callable, Dict, Iterable, Mapping, Tuple, Union
 from urllib.parse import parse_qs
 
-Handler = Callable[..., Dict[str, object]]
+HandlerResponse = Union[Dict[str, object], "PlainTextResponse"]
+Handler = Callable[..., HandlerResponse]
 RouteKey = Tuple[str, str]
 
 
@@ -18,6 +19,15 @@ class Request:
     method: str
     path: str
     query_params: Mapping[str, str]
+
+
+@dataclass(frozen=True)
+class PlainTextResponse:
+    """Plain text payload returned by handlers (used for ICS feeds)."""
+
+    content: str
+    content_type: str = "text/plain; charset=utf-8"
+    status_code: int = 200
 
 
 class HttpError(Exception):
@@ -41,6 +51,10 @@ class HttpError(Exception):
     def conflict(cls, code: str, message: str) -> "HttpError":
         return cls(409, code, message)
 
+    @classmethod
+    def unauthorized(cls, code: str, message: str) -> "HttpError":
+        return cls(401, code, message)
+
 
 class MicroApi:
     """Very small WSGI-compatible application with GET routing only."""
@@ -61,7 +75,7 @@ class MicroApi:
 
         return decorator
 
-    def dispatch(self, method: str, path: str) -> Tuple[int, Dict[str, object]]:
+    def dispatch(self, method: str, path: str) -> Tuple[int, HandlerResponse]:
         """Return status code and payload for the route."""
 
         normalized_method = method.upper()
@@ -79,29 +93,39 @@ class MicroApi:
         except HttpError as error:
             return error.status_code, {"error": {"code": error.code, "message": error.message}}
 
+        if isinstance(payload, PlainTextResponse):
+            return payload.status_code, payload
         if not isinstance(payload, dict):
-            raise TypeError("Handlers must return dictionaries")
+            raise TypeError("Handlers must return dictionaries or PlainTextResponse")
         return 200, payload
 
-    def _call_handler(self, handler: Handler, request: Request) -> Dict[str, object]:
+    def _call_handler(self, handler: Handler, request: Request) -> HandlerResponse:
         """Call the handler with the minimal request context if requested."""
 
         parameters = signature(handler).parameters
         if not parameters:
-            return handler()
+            return handler()  # type: ignore[return-value]
         return handler(request)
 
     def __call__(self, environ: Dict[str, object], start_response: Callable[[str, Iterable[Tuple[str, str]]], None]):
         method = str(environ.get("REQUEST_METHOD", "GET")).upper()
         path = str(environ.get("PATH_INFO", "/"))
         status_code, payload = self.dispatch(method, path)
-        body = json.dumps(payload, ensure_ascii=True).encode("utf-8")
+        if isinstance(payload, PlainTextResponse):
+            body = payload.content.encode("utf-8")
+            headers = [
+                ("Content-Type", payload.content_type),
+                ("Content-Length", str(len(body))),
+                ("X-Orga-Api", self.version),
+            ]
+        else:
+            body = json.dumps(payload, ensure_ascii=True).encode("utf-8")
+            headers = [
+                ("Content-Type", "application/json; charset=utf-8"),
+                ("Content-Length", str(len(body))),
+                ("X-Orga-Api", self.version),
+            ]
         status_phrase = self._status_phrase(status_code)
-        headers = [
-            ("Content-Type", "application/json; charset=utf-8"),
-            ("Content-Length", str(len(body))),
-            ("X-Orga-Api", self.version),
-        ]
         start_response(f"{status_code} {status_phrase}", headers)
         return [body]
 
@@ -109,6 +133,7 @@ class MicroApi:
     def _status_phrase(status_code: int) -> str:
         mapping = {
             200: "OK",
+            401: "Unauthorized",
             404: "Not Found",
             409: "Conflict",
             422: "Unprocessable Entity",
@@ -116,4 +141,4 @@ class MicroApi:
         return mapping.get(status_code, "OK")
 
 
-__all__ = ["HttpError", "MicroApi", "Request"]
+__all__ = ["HttpError", "MicroApi", "PlainTextResponse", "Request"]
