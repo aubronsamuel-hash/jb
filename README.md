@@ -79,3 +79,12 @@ Les day sheets consolidant les techniciens confirmes/in-progress sont disponible
 * Endpoint : `GET /api/daysheets/day-sheet.txt?date=YYYY-MM-DD[&statuses=confirmed,in-progress]` (`text/plain; charset=utf-8`).
 * Script : `python -m scripts.export_day_sheet --date 2024-06-10 --out build/day-sheets/2024-06-10.txt`.
 * Documentation : `docs/backend/day-sheets.md`.
+
+
+## Crew Roster CSV (Step 16)
+
+Les rosters techniciens sont disponibles au format CSV ASCII (CRLF).
+
+* Endpoint : `GET /api/rosters/crew-roster.csv?date=YYYY-MM-DD[&statuses=confirmed,in-progress]` (`text/csv; charset=utf-8`).
+* Script : `python -m scripts.export_roster_csv --date 2024-06-10 --out build/rosters/crew-roster-2024-06-10.csv`.
+* Documentation : `docs/backend/crew-roster-csv.md`.

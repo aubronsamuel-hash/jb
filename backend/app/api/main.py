@@ -20,6 +20,12 @@ from ..services.daysheet import (
     collect_day_sheet,
     render_day_sheet_ascii,
 )
+from ..services.roster import (
+    RosterDateError,
+    RosterNotFoundError,
+    collect_roster,
+    render_roster_csv,
+)
 
 
 def create_app() -> MicroApi:
@@ -115,6 +121,29 @@ def create_app() -> MicroApi:
 
         text = render_day_sheet_ascii(payload)
         return PlainTextResponse(content=text, content_type="text/plain; charset=utf-8")
+
+    @app.get("/api/rosters/crew-roster.csv")
+    def crew_roster(request: Request) -> PlainTextResponse:
+        date_param = request.query_params.get("date")
+        if date_param is None or not date_param.strip():
+            raise HttpError.unprocessable("missing_date", "date query parameter is required")
+
+        statuses_param = request.query_params.get("statuses")
+        statuses: tuple[str, ...] | None = None
+        if statuses_param:
+            statuses = tuple(
+                part.strip() for part in statuses_param.split(",") if part.strip()
+            )
+
+        try:
+            payload = collect_roster(date_param.strip(), include_statuses=statuses)
+        except RosterDateError as error:
+            raise HttpError.unprocessable("invalid_date", str(error)) from error
+        except RosterNotFoundError as error:
+            raise HttpError.not_found("roster_not_found", str(error)) from error
+
+        csv_text = render_roster_csv(payload)
+        return PlainTextResponse(content=csv_text, content_type="text/csv; charset=utf-8")
 
     return app
 
