@@ -44,10 +44,35 @@ Deliverables
 * Correctifs backend/frontend merges avec tests mis a jour et documentation synchronisee.
 * Checklist release + evidences archivees dans `.codex/sessions/step-12/`.
 
+## Execution Step 12
+
+### Collecte QA
+
+* Matrice consolidee dans `docs/qa/step-12-feedback.md` (tickets QA-101, QA-134, QA-137, QA-139, QA-090).
+* Evidence tests + exports deposee dans `.codex/sessions/step-12/`.
+
+### Correctifs Backend & Tests
+
+* Micro API supporte requetes avec query string + `HttpError` (codes 404/409/422 ASCII).
+* Nouveau service `get_assignment_feed()` (pagination curseur, limites 1..50, resume statut).
+* Endpoint `GET /api/planning/assignments` + tests `test_api_planning.py` / `test_planning_services.py`.
+
+### Ajustements Frontend & UX
+
+* `ApiClient` gere erreurs 409/422 via `ApiClientError` et toasts ASCII.
+* Helpers planning (`sanitizeAssignmentFeed`, `computeAssignmentAccessibilityHints`) garantissent accessibilite NVDA.
+* Tests Vitest couvrent la normalisation et les annonces aria-live.
+
+### Documentation & Release Prep
+
+* Specs back/front maj (pagination assignments, toasts, accessibilite).
+* Checklist release dans `docs/qa/step-12-release-checklist.md`.
+* Notes QA et evidences referencees pour go/no-go.
+
 Acceptance Criteria
 
 * Tous les tickets QA critiques/majeurs sont resolus ou disposent d un plan de mitigation documente.
 * Les suites de tests (pytest backend, vitest frontend) passent sur Windows/PowerShell et couvrent les cas QA remontes.
 * La checklist release est validee par backend, frontend et QA; les preuves sont accessibles et ASCII-only.
 
-VALIDATE? yes/no
+VALIDATE? yes

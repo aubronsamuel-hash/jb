@@ -1,7 +1,12 @@
 from __future__ import annotations
 
-from .app import MicroApi
+from .app import HttpError, MicroApi, Request
 from ..services.dashboard import build_dashboard_snapshot, serialize_snapshot, summarize_snapshot
+from ..services.planning import (
+    AssignmentCursorNotFound,
+    AssignmentPaginationError,
+    get_assignment_feed,
+)
 
 API_TITLE = "Orga Dashboard API"
 API_VERSION = "0.2.0"
@@ -25,6 +30,25 @@ def create_app() -> MicroApi:
     def dashboard_summary() -> dict[str, object]:
         snapshot = build_dashboard_snapshot()
         return summarize_snapshot(snapshot)
+
+    @app.get("/api/planning/assignments")
+    def planning_assignments(request: Request) -> dict[str, object]:
+        limit_param = request.query_params.get("limit")
+        cursor = request.query_params.get("cursor") or None
+
+        limit_value: int | None = None
+        if limit_param:
+            try:
+                limit_value = int(limit_param)
+            except ValueError as error:
+                raise HttpError.unprocessable("invalid_limit", "limit must be an integer") from error
+
+        try:
+            return get_assignment_feed(cursor=cursor, limit=limit_value)
+        except AssignmentCursorNotFound as error:
+            raise HttpError.not_found("cursor_not_found", str(error)) from error
+        except AssignmentPaginationError as error:
+            raise HttpError.unprocessable("invalid_pagination", str(error)) from error
 
     return app
 

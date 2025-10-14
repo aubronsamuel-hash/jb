@@ -203,6 +203,14 @@ Endpoints:
 * `PATCH /v1/assignments/{id}`
 * `DELETE /v1/assignments/{id}`
 
+### 3.1 Flux pagination assignments
+
+* `GET /v1/planning/assignments/feed?limit=<int>&cursor=<string>` -> `{ "items":[], "pageInfo":{ "limit":20, "nextCursor":"asg-2", "previousCursor":null }, "summary":{ "total":120, "byStatus":{ "confirmed":80, "pending":30, "declined":10 } } }`
+  * `limit` min 1 / max 50. Retour 422 `{"error":{"code":"invalid_pagination"}}` si hors plage.
+  * `cursor` represente `assignment.id` du dernier element consomme. Retour 404 `{"error":{"code":"cursor_not_found"}}` si id inconnu.
+  * Toutes les reponses ASCII (`Content-Type: application/json; charset=utf-8`) pour compatibilite PowerShell.
+  * Sur conflit assignation (drag & drop simultane) le backend renvoie 409 `{"error":{"code":"conflict"}}`; le front declenche toast via `ApiClientError.toToastMessage()`.
+
 ## 4. Planning (events)
 
 `PlanningEvent`:
