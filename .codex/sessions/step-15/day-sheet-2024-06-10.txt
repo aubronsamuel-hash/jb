@@ -1,0 +1,9 @@
+DAY SHEET 2024-06-10
+================================================================
+08:00-14:00 | Balance lumiere | Grande scene
+Tech: Malik Roche (lumiere) [CONFIRMED]
+IDs: assignment=asg-aurora-light-1 mission=m-light-tech user=crew-malik
+
+Total assignments: 1
+ - confirmed: 1
+

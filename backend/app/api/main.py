@@ -14,6 +14,12 @@ from ..services.calendar import (
     InvalidTokenError,
     build_calendar_feed,
 )
+from ..services.daysheet import (
+    DaySheetDateError,
+    DaySheetNotFoundError,
+    collect_day_sheet,
+    render_day_sheet_ascii,
+)
 
 
 def create_app() -> MicroApi:
@@ -86,6 +92,29 @@ def create_app() -> MicroApi:
             raise HttpError.unauthorized("invalid_token", str(error)) from error
 
         return PlainTextResponse(content=feed, content_type="text/calendar; charset=utf-8")
+
+    @app.get("/api/daysheets/day-sheet.txt")
+    def day_sheet(request: Request) -> PlainTextResponse:
+        date_param = request.query_params.get("date")
+        if date_param is None or not date_param.strip():
+            raise HttpError.unprocessable("missing_date", "date query parameter is required")
+
+        statuses_param = request.query_params.get("statuses")
+        statuses: tuple[str, ...] | None = None
+        if statuses_param:
+            statuses = tuple(
+                part.strip() for part in statuses_param.split(",") if part.strip()
+            )
+
+        try:
+            payload = collect_day_sheet(date_param.strip(), include_statuses=statuses)
+        except DaySheetDateError as error:
+            raise HttpError.unprocessable("invalid_date", str(error)) from error
+        except DaySheetNotFoundError as error:
+            raise HttpError.not_found("day_sheet_not_found", str(error)) from error
+
+        text = render_day_sheet_ascii(payload)
+        return PlainTextResponse(content=text, content_type="text/plain; charset=utf-8")
 
     return app
 
