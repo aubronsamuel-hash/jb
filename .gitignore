@@ -15,5 +15,9 @@
 !.codex/sessions/step-06/**
 !.codex/sessions/step-07/
 !.codex/sessions/step-07/**
+!.codex/sessions/step-08/
+!.codex/sessions/step-08/**
+!.codex/sessions/step-09/
+!.codex/sessions/step-09/**
 node_modules/
 **pycache**/

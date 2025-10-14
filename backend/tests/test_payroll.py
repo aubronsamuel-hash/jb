@@ -12,6 +12,7 @@ from backend.app.services.payroll import (
     payroll_report_to_pdf,
     write_payroll_report,
 )
+from scripts import export_payroll_reports
 
 
 def _assert_ascii(content: bytes | str) -> None:
@@ -53,3 +54,18 @@ def test_payroll_exports_are_ascii_and_deterministic(tmp_path: Path) -> None:
     assert pdf_path.exists()
     assert csv_path.read_text(encoding="utf-8") == csv_content
     assert pdf_path.read_bytes() == pdf_bytes
+
+
+def test_export_script_cli_invocation(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    exit_code = export_payroll_reports.main(["--out", str(tmp_path)])
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    csv_path = tmp_path / "payroll-report.csv"
+    pdf_path = tmp_path / "payroll-report.pdf"
+    assert csv_path.exists()
+    assert pdf_path.exists()
+    assert f"CSV: {csv_path}" in captured.out
+    assert f"PDF: {pdf_path}" in captured.out
+    report = build_payroll_report()
+    assert csv_path.read_text(encoding="utf-8") == payroll_report_to_csv(report)
+    assert pdf_path.read_bytes() == payroll_report_to_pdf(report)
