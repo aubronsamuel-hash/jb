@@ -42,3 +42,12 @@ npm test
 ```
 
 Les tests front s appuient sur le runner stub `frontend/vendor/vitest` et couvrent la configuration router/navigation ainsi que les tokens du design system.
+
+## Backend API (Step 08)
+
+Le service HTTP repose sur une micro pile interne pour servir le snapshot Orga et son resume KPI.
+
+* Lancement : `python -m backend.app.api.server --host 127.0.0.1 --port 8000`.
+* Routes clefs : `/health`, `/api/dashboard/snapshot`, `/api/dashboard/summary`.
+
+Les reponses restent ASCII pour respecter les contraintes Windows-first. Consultez `docs/backend/api-dashboard.md` pour le detail des payloads et la procedure complete.
