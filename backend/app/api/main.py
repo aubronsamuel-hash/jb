@@ -4,7 +4,7 @@ from .app import MicroApi
 from ..services.dashboard import build_dashboard_snapshot, serialize_snapshot, summarize_snapshot
 
 API_TITLE = "Orga Dashboard API"
-API_VERSION = "0.1.0"
+API_VERSION = "0.2.0"
 
 
 def create_app() -> MicroApi:

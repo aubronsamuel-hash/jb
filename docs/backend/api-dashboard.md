@@ -16,7 +16,22 @@ Demarrage serveur (depuis la racine du depot):
 python -m backend.app.api.server --host 127.0.0.1 --port 8000
 ```
 
-Les options `--host` et `--port` restent explicites pour PowerShell. Le serveur embarque utilise `wsgiref.simple_server` et l application est exposee via `backend.app:app`.
+Les options `--host` et `--port` restent explicites pour PowerShell. Le serveur embarque utilise `wsgiref.simple_server` et l application est exposee via `backend.app:app` (version API `0.2.0`).
+
+### Tests rapides PowerShell
+
+```ps1
+# Healthcheck
+Invoke-RestMethod http://127.0.0.1:8000/health
+
+# Snapshot complet
+Invoke-RestMethod http://127.0.0.1:8000/api/dashboard/snapshot | ConvertTo-Json -Depth 6
+
+# Resume KPI
+Invoke-RestMethod http://127.0.0.1:8000/api/dashboard/summary | ConvertTo-Json -Depth 4
+```
+
+`ConvertTo-Json` permet d inspecter rapidement la reponse ASCII sans rompre la compatibilite Windows-first.
 
 ## Routes
 

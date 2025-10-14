@@ -48,6 +48,7 @@ Les tests front s appuient sur le runner stub `frontend/vendor/vitest` et couvre
 Le service HTTP repose sur une micro pile interne pour servir le snapshot Orga et son resume KPI.
 
 * Lancement : `python -m backend.app.api.server --host 127.0.0.1 --port 8000`.
-* Routes clefs : `/health`, `/api/dashboard/snapshot`, `/api/dashboard/summary`.
+* Verification rapide (PowerShell) : `Invoke-RestMethod http://127.0.0.1:8000/health` renvoie `{ status = "ok" }`.
+* Routes clefs : `/health`, `/api/dashboard/snapshot`, `/api/dashboard/summary` (spec backend v0.2 / frontend v0.2).
 
 Les reponses restent ASCII pour respecter les contraintes Windows-first. Consultez `docs/backend/api-dashboard.md` pour le detail des payloads et la procedure complete.
