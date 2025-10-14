@@ -38,6 +38,7 @@ python -m scripts.export_calendar_feed --scope USER:crew-malik --out build/calen
 
 * Detecte automatiquement le token demo pour le scope (surchargable via `--token`).
 * Cree les repertoires parents et logge scope/token/fichier en ASCII.
+* Preserve les fins de ligne `CRLF` lors de l ecriture pour compatibilite PowerShell.
 
 ## Archives
 
