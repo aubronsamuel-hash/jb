@@ -1,0 +1,6 @@
+Release version: 0.2.0
+Status: ok
+Generated at: 2024-05-06T08:00:00Z
+Missions total: 4 (confirmed 25.0%)
+Alerts: Conflit planning: mission Soundcheck groupe A overlap avec repetition video, Budget depasse: Festival Aurora +2800 EUR, Disponibilite critique: role video sous 60%
+Sample assignments: asg-aurora-light-1, asg-aurora-sound-1, asg-riverside-video-1
