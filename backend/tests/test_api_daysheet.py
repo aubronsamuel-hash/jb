@@ -15,6 +15,15 @@ def test_day_sheet_endpoint_returns_text() -> None:
     response.text.encode("ascii")
 
 
+def test_day_sheet_endpoint_supports_statuses_filter() -> None:
+    response = client.get(
+        "/api/daysheets/day-sheet.txt?date=2024-07-04&statuses=pending, planned"
+    )
+    assert response.status_code == 200
+    assert "Calibration cameras" in response.text
+    assert "[PENDING]" in response.text
+
+
 def test_day_sheet_endpoint_requires_date() -> None:
     response = client.get("/api/daysheets/day-sheet.txt")
     assert response.status_code == 422
