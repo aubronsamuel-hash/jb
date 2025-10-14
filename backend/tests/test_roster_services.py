@@ -33,6 +33,16 @@ def test_collect_roster_supports_status_filter() -> None:
     assert rows[0]["status"] == "declined"
 
 
+def test_collect_roster_normalizes_statuses() -> None:
+    payload = collect_roster(
+        "2024-06-10", include_statuses=("  CONFIRMED  ", "Declined", "declined")
+    )
+
+    rows = payload["rows"]
+    statuses = {row["status"] for row in rows}
+    assert statuses == {"confirmed", "declined"}
+
+
 def test_collect_roster_validates_date() -> None:
     with pytest.raises(RosterDateError):
         collect_roster("10-06-2024")
