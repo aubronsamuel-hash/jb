@@ -8,14 +8,20 @@
         "dev": "node ./scripts/vite-dev.js",
         "build": "node ./scripts/vite-build.js",
         "preview": "node ./scripts/vite-preview.js",
+        "lint": "node ./scripts/lint.js",
+        "typecheck": "node ./scripts/typecheck.js",
         "storybook": "node ./scripts/storybook.js",
-        "test": "node ./vendor/vitest/bin/vitest.js run --reporter=dot"
+        "test": "node ./vendor/vitest/bin/vitest.js run --reporter=dot",
+        "e2e": "node ./scripts/playwright.js"
     },
     "dependencies": {
         "@tanstack/react-query": "file:vendor/@tanstack/react-query",
+        "i18next": "file:vendor/i18next",
+        "lucide-react": "file:vendor/lucide-react",
         "react": "file:vendor/react",
         "react-dom": "file:vendor/react-dom",
-        "react-router-dom": "file:vendor/react-router-dom"
+        "react-router-dom": "file:vendor/react-router-dom",
+        "zustand": "file:vendor/zustand"
     },
     "devDependencies": {
         "autoprefixer": "file:vendor/autoprefixer",

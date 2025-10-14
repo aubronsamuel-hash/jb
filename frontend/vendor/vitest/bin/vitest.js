@@ -1,9 +1,15 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 import { readdir } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { __getSuites, __reset } from '../index.js';
+import { transpileModule } from 'typescript';
+
+const moduleCache = new Map();
+const nodeRequire = createRequire(import.meta.url);
 
 async function collectTestFiles(rootDir) {
   const entries = await readdir(rootDir, { withFileTypes: true }).catch((error) => {
@@ -18,16 +24,64 @@ async function collectTestFiles(rootDir) {
     if (entry.isDirectory()) {
       const nested = await collectTestFiles(entryPath);
       files.push(...nested);
-    } else if (entry.isFile() && entry.name.endsWith('.test.js')) {
+    } else if (
+      entry.isFile() &&
+      (entry.name.endsWith('.test.js') || entry.name.endsWith('.test.ts'))
+    ) {
       files.push(entryPath);
     }
   }
   return files;
 }
 
+function resolveModule(specifier, basedir) {
+  const explicitPath = path.resolve(basedir, specifier);
+  if (fs.existsSync(explicitPath)) {
+    return explicitPath;
+  }
+  const tsCandidate = `${explicitPath}.ts`;
+  if (fs.existsSync(tsCandidate)) {
+    return tsCandidate;
+  }
+  const jsCandidate = `${explicitPath}.js`;
+  if (fs.existsSync(jsCandidate)) {
+    return jsCandidate;
+  }
+  return explicitPath;
+}
+
+function loadModuleSync(filePath) {
+  if (moduleCache.has(filePath)) {
+    return moduleCache.get(filePath).exports;
+  }
+  if (filePath.endsWith('.ts')) {
+    const source = fs.readFileSync(filePath, 'utf8');
+    const { outputText } = transpileModule(source);
+    const module = { exports: {} };
+    moduleCache.set(filePath, module);
+    const dirname = path.dirname(filePath);
+    const wrapper = new Function('require', 'module', 'exports', '__dirname', '__filename', outputText);
+    const localRequire = (specifier) => {
+      if (specifier.startsWith('.')) {
+        const resolved = resolveModule(specifier, dirname);
+        return loadModuleSync(resolved);
+      }
+      return nodeRequire(specifier);
+    };
+    wrapper(localRequire, module, module.exports, dirname, filePath);
+    return module.exports;
+  }
+  return nodeRequire(filePath);
+}
+
 async function runTestFile(filePath) {
   __reset();
-  await import(pathToFileURL(filePath).href);
+  moduleCache.clear();
+  if (filePath.endsWith('.ts')) {
+    loadModuleSync(filePath);
+  } else {
+    await import(pathToFileURL(filePath).href);
+  }
   const suites = __getSuites();
   const results = [];
   for (const suite of suites) {
