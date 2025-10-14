@@ -2,25 +2,28 @@
 
 Ce depot est initialise par l agent Codex pour un cycle de dev autonome base sur steps. Voir `docs/roadmap` et `AGENT.codex.md`.
 
-## Frontend Orga (Step 05)
+## Frontend Coulisses Crew (Step 10)
 
-Le frontend React/Vite reste en mode offline avec stubs locaux. Cette etape ajoute un snapshot Orga deterministe et relie le dashboard aux helpers du design system.
+Le frontend React 18 + TypeScript repose toujours sur des stubs locaux (Vite, Storybook, Playwright) compatibles PowerShell, mais l architecture est maintenant alignee sur la specification Coulisses Crew v1.
 
-* Entrypoint : `frontend/src/main.js` expose `initializeApp()`.
-* Providers : Query Client, Theme tokens, Router (voir `docs/frontend/architecture.md`).
-* Design system : tokens modes clair/sombre, palette roles, helpers (`createRoleBadge`, `createKpiCard`, `createModuleSummary`, `createNavigationRoleBadges`) et layout dashboard (`createDashboardLayout`). Documentation sous `docs/frontend/design-system.md`.
-* Snapshot Orga : `frontend/public/data/dashboard-snapshot.json` (generer via `python -m scripts.export_dashboard_snapshot`). Charge offline par `loadDashboardSnapshot()`.
-* Navigation : Dashboard, Planning, Missions, Equipes, Materiel, Budgets, Notifications, Parametres.
-* Configs : `frontend/vite.config.ts`, `frontend/tailwind.config.ts`, `frontend/tsconfig.json`, `frontend/postcss.config.cjs`.
+* Entrypoint : `frontend/src/main.ts` re-exporte `initializeApp()` qui installe router, Query Client, theming clair/sombre et i18n.
+* Architecture : dossiers `app/`, `components/`, `features/`, `pages/`, `i18n/`, `state/`, `styles/`, `stories/`, `tests/`. Les providers composent React Query, theme, routing et Toast manager.
+* Design system : composants accessibles (`Button`, `Dialog`, `Tabs`, `Tooltip`, `DataTable`, `Avatar`, `Badge`...) exposes via `frontend/src/components/ui`. Tokens Tailwind et resume du theme dans `frontend/src/app/theme.ts`.
+* Etat : store Zustand (`frontend/src/state/theme-store.ts`) pour le mode sombre et Query Client preprime (`frontend/src/app/query-client.ts`).
+* Localisation : i18n francais (`frontend/src/i18n`) base sur un shim i18next.
+* Documentation : `docs/frontend/coulisses-crew-frontend.md` decrit les commandes et conventions accessibilite/perf.
 
 Scripts npm (depuis `frontend/`):
 
 ```ps1
-npm run dev       # lance le stub Vite en mode dev (affiche un message)
-npm run build     # stub build
-npm run preview   # stub preview
-npm run storybook # stub design system / instructions Storybook
-npm test          # lance les tests vitest stubs
+npm run dev        # stub Vite (message informatif)
+npm run build      # stub build
+npm run preview    # stub preview
+npm run lint       # rappel sur ESLint/Prettier a activer
+npm run typecheck  # rappel sur tsc strict
+npm run storybook  # stub Storybook 8
+npm run test       # tests vitest stubs
+npm run e2e        # stub Playwright
 ```
 
 ## Tests Locaux

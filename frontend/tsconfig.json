@@ -3,11 +3,11 @@
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "Node",
-    "jsx": "react-jsx",
-    "allowJs": true,
-    "checkJs": false,
+    "jsx": "preserve",
+    "strict": true,
+    "noImplicitAny": true,
     "resolveJsonModule": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
@@ -16,7 +16,7 @@
     "noEmit": true
   },
   "include": [
-    "src/**/*",
+    "src/**/*.ts",
     "vite.config.ts",
     "tailwind.config.ts"
   ],
