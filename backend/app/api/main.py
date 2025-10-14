@@ -50,8 +50,21 @@ def create_app() -> MicroApi:
             raise HttpError.unprocessable("invalid_pagination", str(error)) from error
 
     @app.get("/api/ops/status")
-    def ops_status() -> dict[str, object]:
-        return collect_operational_overview()
+    def ops_status(request: Request) -> dict[str, object]:
+        limit_param = request.query_params.get("limit")
+        limit_value: int | None = None
+        if limit_param:
+            try:
+                limit_value = int(limit_param)
+            except ValueError as error:
+                raise HttpError.unprocessable("invalid_limit", "limit must be an integer") from error
+
+        try:
+            if limit_value is None:
+                return collect_operational_overview()
+            return collect_operational_overview(limit=limit_value)
+        except ValueError as error:
+            raise HttpError.unprocessable("invalid_limit", str(error)) from error
 
     return app
 

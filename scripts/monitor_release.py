@@ -49,7 +49,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    overview = collect_operational_overview(limit=args.limit)
+    try:
+        overview = collect_operational_overview(limit=args.limit)
+    except ValueError as error:
+        parser.error(str(error))
 
     if args.format == "json":
         print(json.dumps(overview, ensure_ascii=True, indent=2))
