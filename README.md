@@ -52,3 +52,11 @@ Le service HTTP repose sur une micro pile interne pour servir le snapshot Orga e
 * Routes clefs : `/health`, `/api/dashboard/snapshot`, `/api/dashboard/summary` (spec backend v0.2 / frontend v0.2).
 
 Les reponses restent ASCII pour respecter les contraintes Windows-first. Consultez `docs/backend/api-dashboard.md` pour le detail des payloads et la procedure complete.
+
+## Paie & Feuilles de temps (Step 09)
+
+Le module paie fournit un dataset deterministe et des exports ASCII pour les besoins URSSAF/compta.
+
+* Commande export : `python -m scripts.export_payroll_reports --out build/payroll`.
+* Fichiers generes : `payroll-report.csv` (tableau par collaborateur) et `payroll-report.pdf` (stub ASCII).
+* Documentation : `docs/backend/payroll-timesheets.md`.
