@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 from .app import HttpError, MicroApi, Request
+from ..config import API_TITLE, API_VERSION
 from ..services.dashboard import build_dashboard_snapshot, serialize_snapshot, summarize_snapshot
 from ..services.planning import (
     AssignmentCursorNotFound,
     AssignmentPaginationError,
     get_assignment_feed,
 )
-
-API_TITLE = "Orga Dashboard API"
-API_VERSION = "0.2.0"
+from ..services.operations import collect_operational_overview
 
 
 def create_app() -> MicroApi:
@@ -49,6 +48,10 @@ def create_app() -> MicroApi:
             raise HttpError.not_found("cursor_not_found", str(error)) from error
         except AssignmentPaginationError as error:
             raise HttpError.unprocessable("invalid_pagination", str(error)) from error
+
+    @app.get("/api/ops/status")
+    def ops_status() -> dict[str, object]:
+        return collect_operational_overview()
 
     return app
 

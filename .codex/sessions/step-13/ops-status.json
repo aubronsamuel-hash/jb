@@ -1,0 +1,48 @@
+{
+  "release": {
+    "version": "0.2.0",
+    "status": "ok",
+    "generatedAt": "2024-05-06T08:00:00Z"
+  },
+  "dashboard": {
+    "missions": {
+      "total": 4,
+      "byStatus": {
+        "confirmed": 1,
+        "in-progress": 1,
+        "pending": 1,
+        "planned": 1
+      },
+      "confirmedRatio": 25.0
+    },
+    "projects": {
+      "active": 2
+    },
+    "alerts": [
+      "Conflit planning: mission Soundcheck groupe A overlap avec repetition video",
+      "Budget depasse: Festival Aurora +2800 EUR",
+      "Disponibilite critique: role video sous 60%"
+    ]
+  },
+  "planning": {
+    "pageInfo": {
+      "limit": 2,
+      "nextCursor": "asg-aurora-sound-1",
+      "previousCursor": null
+    },
+    "summary": {
+      "total": 5,
+      "byStatus": {
+        "confirmed": 1,
+        "in-progress": 1,
+        "pending": 1,
+        "planned": 1,
+        "declined": 1
+      }
+    },
+    "sample": [
+      "asg-aurora-light-1",
+      "asg-aurora-sound-1"
+    ]
+  }
+}
