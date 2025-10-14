@@ -6,6 +6,7 @@ Ce guide deploiement Step 13 decrit comment collecter en ASCII la sante de l API
 
 * Fournit `release.status` (`ok` attendu) et `release.version`.
 * Resume dashboard (`missions`, `projects`, `alerts`) et planning (`pageInfo`, `summary`, `sample`).
+* Parametre `?limit=` (entier > 0) pour reduire l echantillon assignments expose.
 * Payload garantit des identifiants ASCII et des ratios arrondis.
 
 ## Script `monitor_release.py`
