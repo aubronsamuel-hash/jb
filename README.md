@@ -71,3 +71,11 @@ Les flux calendaires exposent les assignations confirmees sous forme ICS securis
 * Endpoint : `GET /api/calendar/assignments.ics?scope=<scope>&token=<token>` (Content-Type `text/calendar; charset=utf-8`).
 * Script PowerShell-friendly : `python -m scripts.export_calendar_feed --scope USER:crew-malik --out build/calendar/malik.ics`.
 * Documentation : `docs/backend/calendar-ics-feeds.md`.
+
+## Day Sheet ASCII (Step 15)
+
+Les day sheets consolidant les techniciens confirmes/in-progress sont disponibles en texte ASCII (CRLF).
+
+* Endpoint : `GET /api/daysheets/day-sheet.txt?date=YYYY-MM-DD[&statuses=confirmed,in-progress]` (`text/plain; charset=utf-8`).
+* Script : `python -m scripts.export_day_sheet --date 2024-06-10 --out build/day-sheets/2024-06-10.txt`.
+* Documentation : `docs/backend/day-sheets.md`.

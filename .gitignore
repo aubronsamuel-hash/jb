@@ -31,3 +31,5 @@ node_modules/
 **pycache**/
 !.codex/sessions/step-14/
 !.codex/sessions/step-14/**
+!.codex/sessions/step-15/
+!.codex/sessions/step-15/**
