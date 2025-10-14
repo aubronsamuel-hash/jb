@@ -14,6 +14,12 @@ from ..services.calendar import (
     InvalidTokenError,
     build_calendar_feed,
 )
+from ..services.budgets import (
+    BudgetReportNotFoundError,
+    BudgetThresholdError,
+    collect_budget_variance,
+    render_budget_variance_ascii,
+)
 from ..services.daysheet import (
     DaySheetDateError,
     DaySheetNotFoundError,
@@ -144,6 +150,26 @@ def create_app() -> MicroApi:
 
         csv_text = render_roster_csv(payload)
         return PlainTextResponse(content=csv_text, content_type="text/csv; charset=utf-8")
+
+    @app.get("/api/budgets/budget-variance.txt")
+    def budget_variance(request: Request) -> PlainTextResponse:
+        threshold_param = request.query_params.get("threshold")
+        threshold_value: int | None = None
+        if threshold_param is not None and threshold_param.strip():
+            try:
+                threshold_value = int(threshold_param)
+            except ValueError as error:
+                raise HttpError.unprocessable("invalid_threshold", "threshold must be an integer") from error
+
+        try:
+            payload = collect_budget_variance(alert_threshold=threshold_value)
+        except BudgetThresholdError as error:
+            raise HttpError.unprocessable("invalid_threshold", str(error)) from error
+        except BudgetReportNotFoundError as error:
+            raise HttpError.not_found("budget_report_not_found", str(error)) from error
+
+        text = render_budget_variance_ascii(payload)
+        return PlainTextResponse(content=text, content_type="text/plain; charset=utf-8")
 
     return app
 
