@@ -29,3 +29,5 @@
 !.codex/sessions/step-13/**
 node_modules/
 **pycache**/
+!.codex/sessions/step-14/
+!.codex/sessions/step-14/**

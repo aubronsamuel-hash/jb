@@ -63,3 +63,11 @@ Le module paie fournit un dataset deterministe et des exports ASCII pour les bes
 * Commande export : `python -m scripts.export_payroll_reports --out build/payroll`.
 * Fichiers generes : `payroll-report.csv` (tableau par collaborateur) et `payroll-report.pdf` (stub ASCII).
 * Documentation : `docs/backend/payroll-timesheets.md`.
+
+## Calendrier ICS (Step 14)
+
+Les flux calendaires exposent les assignations confirmees sous forme ICS securisee par token.
+
+* Endpoint : `GET /api/calendar/assignments.ics?scope=<scope>&token=<token>` (Content-Type `text/calendar; charset=utf-8`).
+* Script PowerShell-friendly : `python -m scripts.export_calendar_feed --scope USER:crew-malik --out build/calendar/malik.ics`.
+* Documentation : `docs/backend/calendar-ics-feeds.md`.

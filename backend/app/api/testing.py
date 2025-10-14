@@ -1,22 +1,26 @@
+"""Test helpers for exercising the MicroApi."""
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass
 
-from .app import MicroApi
+from .app import MicroApi, PlainTextResponse
 
 
 @dataclass
 class ApiResponse:
     status_code: int
-    _payload: dict[str, object]
+    body: str
+    content_type: str
 
     def json(self) -> dict[str, object]:
-        return self._payload
+        if "application/json" not in self.content_type:
+            raise ValueError("Response is not JSON")
+        return json.loads(self.body)
 
     @property
     def text(self) -> str:
-        return json.dumps(self._payload, ensure_ascii=True)
+        return self.body
 
 
 class ApiTestClient:
@@ -27,7 +31,18 @@ class ApiTestClient:
 
     def get(self, path: str) -> ApiResponse:
         status_code, payload = self._app.dispatch("GET", path)
-        return ApiResponse(status_code=status_code, _payload=payload)
+        if isinstance(payload, PlainTextResponse):
+            return ApiResponse(
+                status_code=status_code,
+                body=payload.content,
+                content_type=payload.content_type,
+            )
+        body = json.dumps(payload, ensure_ascii=True)
+        return ApiResponse(
+            status_code=status_code,
+            body=body,
+            content_type="application/json; charset=utf-8",
+        )
 
 
 __all__ = ["ApiResponse", "ApiTestClient"]

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .app import HttpError, MicroApi, Request
+from .app import HttpError, MicroApi, PlainTextResponse, Request
 from ..config import API_TITLE, API_VERSION
 from ..services.dashboard import build_dashboard_snapshot, serialize_snapshot, summarize_snapshot
 from ..services.planning import (
@@ -9,6 +9,11 @@ from ..services.planning import (
     get_assignment_feed,
 )
 from ..services.operations import collect_operational_overview
+from ..services.calendar import (
+    InvalidScopeError,
+    InvalidTokenError,
+    build_calendar_feed,
+)
 
 
 def create_app() -> MicroApi:
@@ -65,6 +70,22 @@ def create_app() -> MicroApi:
             return collect_operational_overview(limit=limit_value)
         except ValueError as error:
             raise HttpError.unprocessable("invalid_limit", str(error)) from error
+
+    @app.get("/api/calendar/assignments.ics")
+    def calendar_assignments(request: Request) -> PlainTextResponse:
+        scope = request.query_params.get("scope")
+        token = request.query_params.get("token")
+        if token is None or not token.strip():
+            raise HttpError.unprocessable("missing_token", "token query parameter is required")
+
+        try:
+            feed = build_calendar_feed(scope, token)
+        except InvalidScopeError as error:
+            raise HttpError.unprocessable("invalid_scope", str(error)) from error
+        except InvalidTokenError as error:
+            raise HttpError.unauthorized("invalid_token", str(error)) from error
+
+        return PlainTextResponse(content=feed, content_type="text/calendar; charset=utf-8")
 
     return app
 

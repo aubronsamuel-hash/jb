@@ -1,0 +1,18 @@
+BEGIN:VCALENDAR
+PRODID:-//Coulisses Crew//Planning//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Malik Roche - Assignments
+X-WR-CALDESC:Confirmed assignments exported from Coulisses Crew.
+BEGIN:VEVENT
+UID:asg-aurora-light-1@coulisses-crew
+DTSTAMP:20240506T073500Z
+DTSTART:20240610T080000Z
+DTEND:20240610T140000Z
+SUMMARY:Balance lumiere
+LOCATION:Grande scene
+DESCRIPTION:Malik Roche (lumiere)
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
