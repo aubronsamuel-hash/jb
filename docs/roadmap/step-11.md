@@ -44,4 +44,16 @@ Acceptance Criteria
 * Les conventions de pagination, tri, filtres, erreurs et idempotence sont explicites.
 * La checklist integration front couvre auth refresh, headers, queries, uploader.
 
+## Etat Step 11
+
+* Spec `docs/specs/api_front-backend-schema-v1.md` enrichie (headers communs, sequences front, guardrails securite/perf).
+* Archives `.codex/sessions/step-11/` alimentees (notes, tests log) et conformes ASCII.
+* Guidelines React Query/Zod/upload diffusees aux squads front/back.
+
+## Prochaines actions
+
+* Organiser revue croisee backend/frontend pour valider le contrat avant sprint missions.
+* Collecter feedback QA sur scenarios login/planning/assignation pour iteration Step 12.
+* Maintenir `.codex` a jour avec logs de validation et diff finaux.
+
 VALIDATE? yes/no
