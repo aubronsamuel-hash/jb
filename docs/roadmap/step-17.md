@@ -53,18 +53,18 @@ Acceptance Criteria
 
 ### Service & Tests
 
-* Module `backend/app/services/budgets.py` calcule deltas, ratio %, alerts (tri absolu) + erreurs.
-* Tests `backend/tests/test_budget_services.py` couvrent seuil par defaut, override, erreurs et rendu ASCII.
+* Module `backend/app/services/budgets.py` calcule les deltas/ratios depuis le snapshot et attribue le statut `alert` lorsque |delta| >= seuil.
+* Campagne `pytest` (voir log Step 17) couvre les services (`test_budget_services.py`), l API (`test_api_budget.py`) et le script CLI (`test_export_budget_variance_script.py`).
 
 ### API
 
-* Route `GET /api/budgets/budget-variance.txt` renvoie `text/plain` + `Status: ALERT/OK`.
-* Tests `backend/tests/test_api_budget.py` verifient 200 (ASCII CRLF) et validations `422`.
+* Route `GET /api/budgets/budget-variance.txt` expose le rendu ASCII CRLF avec en-tete `BUDGET VARIANCE REPORT` et lignes `Status: ALERT/OK`.
+* Les tests API valident le code 200, la surcharge de seuil (`threshold=5000`) et les erreurs `invalid_threshold`/`budget_report_not_found`.
 
 ### Script, Docs & Archives
 
-* CLI `python -m scripts.export_budget_variance` ecrit ASCII CRLF + resume console.
-* Documentation `docs/backend/budget-variance-report.md` + README (section Budget Variance).
-* Archive `.codex/sessions/step-17/budget-variance-2024-06-10.txt` + README recap commande.
+* Export effectue via `python -m scripts.export_budget_variance --out .codex/sessions/step-17/budget-variance-2024-06-10.txt` (CRLF, seuil 2000 EUR).
+* Documentation mise a jour (`docs/backend/budget-variance-report.md`, README section Budget Variance ASCII Report).
+* Archive disponible dans `.codex/sessions/step-17/` (rapport texte + README de commande).
 
 VALIDATE? yes
