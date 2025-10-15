@@ -96,3 +96,11 @@ Le rapport budgets vs reels est disponible en texte ASCII (CRLF).
 * Endpoint : `GET /api/budgets/budget-variance.txt[?threshold=5000]` (`text/plain; charset=utf-8`).
 * Script : `python -m scripts.export_budget_variance --out build/budgets/budget-variance.txt --threshold 5000`.
 * Documentation : `docs/backend/budget-variance-report.md`.
+
+## Role Utilization ASCII Report (Step 18)
+
+Le rapport sur les charges roles est disponible en texte ASCII (CRLF).
+
+* Endpoint : `GET /api/roles/role-utilization.txt[?target=80]` (`text/plain; charset=utf-8`).
+* Script : `python -m scripts.export_role_utilization --out build/roles/role-utilization.txt --target 80`.
+* Documentation : `docs/backend/role-utilization-report.md`.

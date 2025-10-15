@@ -32,6 +32,12 @@ from ..services.roster import (
     collect_roster,
     render_roster_csv,
 )
+from ..services.utilization import (
+    UtilizationReportNotFoundError,
+    UtilizationTargetError,
+    collect_role_utilization,
+    render_role_utilization_ascii,
+)
 
 
 def create_app() -> MicroApi:
@@ -169,6 +175,29 @@ def create_app() -> MicroApi:
             raise HttpError.not_found("budget_report_not_found", str(error)) from error
 
         text = render_budget_variance_ascii(payload)
+        return PlainTextResponse(content=text, content_type="text/plain; charset=utf-8")
+
+    @app.get("/api/roles/role-utilization.txt")
+    def role_utilization(request: Request) -> PlainTextResponse:
+        target_param = request.query_params.get("target")
+        target_ratio: float | None = None
+        if target_param is not None and target_param.strip():
+            try:
+                target_value = float(target_param)
+            except ValueError as error:
+                raise HttpError.unprocessable("invalid_target", "target must be a number") from error
+            if target_value <= 0 or target_value > 100:
+                raise HttpError.unprocessable("invalid_target", "target must be within 0 and 100")
+            target_ratio = target_value / 100.0
+
+        try:
+            payload = collect_role_utilization(target_ratio=target_ratio)
+        except UtilizationTargetError as error:
+            raise HttpError.unprocessable("invalid_target", str(error)) from error
+        except UtilizationReportNotFoundError as error:
+            raise HttpError.not_found("utilization_report_not_found", str(error)) from error
+
+        text = render_role_utilization_ascii(payload)
         return PlainTextResponse(content=text, content_type="text/plain; charset=utf-8")
 
     return app

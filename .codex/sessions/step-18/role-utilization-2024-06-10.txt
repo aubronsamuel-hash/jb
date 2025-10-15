@@ -1,0 +1,32 @@
+ROLE UTILIZATION REPORT
+================================================================
+Generated at: 2024-05-06T08:00:00Z
+Target utilization: 80.0%
+
+lumiere
+-------------
+Allocated: 30h | Available: 38h
+Utilization: 79.0% | Status: OK
+
+son
+-------------
+Allocated: 28h | Available: 40h
+Utilization: 70.0% | Status: OK
+
+video
+-------------
+Allocated: 18h | Available: 32h
+Utilization: 56.0% | Status: OK
+
+plateau
+-------------
+Allocated: 12h | Available: 30h
+Utilization: 40.0% | Status: OK
+
+SUMMARY
+--------------------------------
+Roles: 4
+Alerts: 0
+Total allocated: 88h
+Total available: 140h
+Average utilization: 63.0%
