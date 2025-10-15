@@ -1,9 +1,13 @@
-# Step 17 Archive
+# Step 17 - Budget Variance Archive
 
-Commande executee:
+Ce dossier conserve l export ASCII du rapport budgets vs reels genere pendant l execution du Step 17.
+
+## Commande
 
 ```ps1
-python -m scripts.export_budget_variance --out .codex/sessions/step-17/budget-variance-2024-06-10.txt --threshold 5000
+python -m scripts.export_budget_variance --out .codex/sessions/step-17/budget-variance-2024-06-10.txt
 ```
 
-Seuil alerte : `5000` EUR. Rapport ASCII CRLF.
+## Contenu
+
+* `budget-variance-2024-06-10.txt` : rapport ASCII CRLF avec seuil par defaut (2000 EUR).

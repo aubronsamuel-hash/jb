@@ -1,12 +1,12 @@
 BUDGET VARIANCE REPORT
 ================================================================
 Generated at: 2024-05-06T08:00:00Z
-Alert threshold: +/-5000 EUR
+Alert threshold: +/-2000 EUR
 
 Festival Aurora (p-aurora)
 --------------------------
 Planned: 42000 EUR | Actual: 44800 EUR | Delta: +2800 EUR
-Delta %: +6.67% | Status: OK
+Delta %: +6.67% | Status: ALERT
 
 Riverside Sessions (p-riverside)
 --------------------------------
@@ -16,7 +16,7 @@ Delta %: -2.58% | Status: OK
 SUMMARY
 --------------------------------
 Projects: 2
-Alerts: 0
+Alerts: 1
 Total planned: 73000 EUR
 Total actual: 75000 EUR
 Total delta: +2000 EUR
